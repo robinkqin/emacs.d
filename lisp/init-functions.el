@@ -60,11 +60,11 @@
 
   (defun my/grep-at-point ()
     (interactive)
-    (counsel-rg (thing-at-point 'symbol) (my/project-root-dir)))
+    (counsel-git-grep (thing-at-point 'symbol) (my/project-root-dir)))
 
   (defun my/grep-from-ynak ()
     (interactive)
-    (counsel-rg (substring-no-properties (car kill-ring)) (my/project-root-dir)))
+    (counsel-git-grep (substring-no-properties (car kill-ring)) (my/project-root-dir)))
 
   (defun my/isearch-at-point ()
     (interactive)
@@ -121,9 +121,13 @@
     consult-citre
     consult-eglot-symbols
     swiper
+    counsel-ag
+    counsel-ack
+    counsel-pt
     counsel-rg
     counsel-grep
     counsel-git-grep
+    counsel-locate
     xref-find-references
 	xref-find-apropos))
 

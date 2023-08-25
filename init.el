@@ -18,7 +18,7 @@
 ;; completion: ivy/swiper/counsel
 ;; check: flycheck/flymake
 ;; project: built-in
-;; tools: git, clangd/clang-format, ripgrep, universal-ctags, fd, global
+;; tools: git, clangd/clang-format, ripgrep, universal-ctags, fd, global, silversearcher-ag
 ;; dict: sdcv, sqlite3, fanyi
 ;; gtags: export GTAGSOBJDIRPREFIX=~/.cache/gtags/
 ;; lsp-bridge: pip install epc orjson sexpdata six paramiko requests cmake-language-server

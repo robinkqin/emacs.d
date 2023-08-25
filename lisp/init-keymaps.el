@@ -44,6 +44,11 @@
 
 (global-set-key (kbd "M-o") 'project-find-file)
 
+(when (package-installed-p 'counsel)
+  (global-set-key (kbd "M-s M-s") 'counsel-rg)
+  (global-set-key (kbd "M-s s") 'counsel-grep)
+  (message "consult keymaps"))
+
 (when (package-installed-p 'consult)
   (global-set-key (kbd "M-s M-s") 'consult-ripgrep)
   (global-set-key (kbd "M-s s") 'consult-grep)
