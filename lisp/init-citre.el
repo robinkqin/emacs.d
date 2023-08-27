@@ -9,20 +9,17 @@
 ;; Ctags IDE on the True Editor
 ;; @see https://github.com/universal-ctags/citre#quick-start
 (use-package citre
-  ;;:init
-  ;;(require 'citre-config)
-  ;;:commands citre-jump-back
-  ;;:functions xref-go-back
-  ;;:bind (:map prog-mode-map
-  ;;            ("C-c j" . citre-jump+)
-  ;;            ("C-c k" . citre-jump-back+)
-  ;;            ("C-c l" . citre-jump-to-reference)
-  ;;            ("C-c ;" . citre-ace-peek)
-  ;;            )
+  :diminish
+  :commands citre-jump-back
+  :functions xref-go-back
+  :bind (:map prog-mode-map
+              ("C-x c j" . citre-jump+)
+              ("C-x c k" . citre-jump-back+)
+              ("C-x c p" . citre-peek)
+              ("C-x c a" . citre-ace-peek)
+              ("C-x c u" . citre-update-this-tags-file))
   :init
   ;;(require 'citre-config)
-  ;;(declare-function citre-auto-enable-citre-mode "citre")
-  ;;(add-hook 'find-file-hook #'citre-auto-enable-citre-mode)
   (setq citre-auto-enable-citre-mode-modes '(prog-mode)
         citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
@@ -32,7 +29,8 @@
     (setq citre-gtags-args '("--compact")))
 
   (defun citre-jump+ ()
-    "Jump to the definition of the symbol at point. Fallback to `xref-find-definitions'."
+    "Jump to the definition of the symbol at point.
+Fallback to `xref-find-definitions'."
     (interactive)
     (condition-case _
         (citre-jump)
@@ -40,7 +38,8 @@
                (call-interactively #'xref-find-definitions)))))
 
   (defun citre-jump-back+ ()
-    "Go back to the position before last `citre-jump'.Fallback to `xref-go-back'."
+    "Go back to the position before last `citre-jump'.
+Fallback to `xref-go-back'."
     (interactive)
     (condition-case _
         (citre-jump-back)
@@ -57,6 +56,7 @@
                   consult-git-grep
                   consult-ripgrep
                   consult-outline
+                  ;;consult-citre
                   ;;citre-jump
                   consult-eglot-symbols))
     (advice-add func :before 'my--push-point-to-xref-marker-stack))
@@ -103,10 +103,10 @@
           "Enable the lsp + Citre capf backend in current buffer."
           (add-hook 'completion-at-point-functions #'lsp-citre-capf-function nil t))
 
-        (add-hook 'citre-mode-hook #'enable-lsp-citre-capf-backend)))
-  (with-no-warnings
-    (message "citre without eglot")
-    (add-to-list 'completion-at-point-functions#'citre-completion-at-point)))
+        (add-hook 'citre-mode-hook #'enable-lsp-citre-capf-backend))
+    (with-no-warnings
+      (message "citre without eglot")
+      (add-to-list 'completion-at-point-functions#'citre-completion-at-point))))
 
 (require 'citre)
 (require 'consult)

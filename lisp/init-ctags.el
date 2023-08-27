@@ -6,26 +6,28 @@
 
 ;;; Code:
 
-(setq my/path-to-ctags "ctags")
-;;(setq my/path-to-ctags "/usr/bin/ctags")
+(require 'init-citre)
+(message "init citre done")
 
-(defun my/create-tags (dir-name)
+(setq my/path-to-ctags "ctags")
+
+(defun my/create-dir-tags (dir-name)
   "Create tags file."
   (interactive "DDirectory: ")
-  (shell-command
+  (async-shell-command
    (format "%s -f TAGS -e -R %s"
 		   my/path-to-ctags
 		   (directory-file-name dir-name))))
 
 ;;(project-async-shell-command)
-(defun my/create-tags-project ()
+(defun my/create-project-tags ()
   "Create tags file."
   (interactive)
   ;;(message (format "%s -f %s/TAGS -e -R %s"
   ;;				   my/path-to-ctags
   ;;				   (my/project-root-dir)
   ;;				   (my/project-root-dir)))
-  (shell-command
+  (async-shell-command
    (format "%s -f %s/TAGS -e -R %s"
 		   my/path-to-ctags
 		   (my/project-root-dir)

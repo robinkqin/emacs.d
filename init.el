@@ -15,16 +15,18 @@
 ;; reference: ctags/etags, global, xref
 ;; refactor: color-rg, symbol-overlay
 ;; completion: corfu(vertico, orderless, consult), company, eglot(clangd)
-;; completion: ivy/swiper/counsel
 ;; check: flycheck/flymake
 ;; project: built-in
-;; tools: git, clangd/clang-format, ripgrep, universal-ctags, fd, global, silversearcher-ag
+;; tools: git, clangd/clang-format, universal-ctags, global, ripgrep/ugrep, fzf, fd, aspell
 ;; dict: sdcv, sqlite3, fanyi
 ;; gtags: export GTAGSOBJDIRPREFIX=~/.cache/gtags/
 ;; lsp-bridge: pip install epc orjson sexpdata six paramiko requests cmake-language-server
 
 (when (version< emacs-version "27.1")
   (error "This requires Emacs 27.1 and above!"))
+
+(defconst my/lsp-bridge-enable nil)
+(defconst my/eglot-enable nil)
 
 (add-to-list 'load-path (expand-file-name "lisp" user-emacs-directory) t)
 (add-to-list 'load-path (expand-file-name "site-lisp" user-emacs-directory) t)
@@ -47,22 +49,29 @@
 (require 'init-gdb)
 (message "init gdb done")
 
+(require 'init-vcs)
+(message "init vcs done")
+
+(require 'init-vertico)
+(message "init vertico done")
+
+;;(require 'init-yasnippet)
+;;(message "init yasnippet done")
+
 (require 'init-dict)
 (message "init dict done")
 
 (require 'init-matchit)
 (message "init matchit done")
 
-(require 'init-ivy)
-(message "init ivy done")
-;;(require 'init-vertico)
-;;(message "init vertico done")
-
 (require 'init-c)
 (message "init c done")
 
 (require 'init-ctags)
 (message "init ctags done")
+
+(require 'init-program)
+(message "init program done")
 
 (require 'init-functions)
 (message "init functions  done")

@@ -7,13 +7,18 @@
 ;;; Code:
 
 (use-package flymake
+  :diminish
   :hook (prog-mode . flymake-mode)
-  :init (setq flymake-fringe-indicator-position 'right-fringe
-              elisp-flymake-byte-compile-load-path load-path))
+  :init (setq flymake-fringe-indicator-position 'right-fringe)
+  :config (setq elisp-flymake-byte-compile-load-path
+                (append elisp-flymake-byte-compile-load-path load-path)))
 
-(use-package flymake-diagnostic-at-point
-  :commands flymake-diagnostic-at-point-mode
-  :hook (flymake-mode . flymake-diagnostic-at-point-mode))
+(use-package sideline-flymake
+  :diminish sideline-mode
+  :hook (flymake-mode . sideline-mode)
+  :init (setq sideline-flymake-display-mode 'point
+              sideline-backends-right '(sideline-flymake)))
+
 
 (provide 'init-flymake)
 

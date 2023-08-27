@@ -33,7 +33,7 @@
 (define-key key-translation-map (kbd "M-q") (kbd "C-v"))
 
 (define-key key-translation-map (kbd "M-c") (kbd "C-g"))
-(define-key key-translation-map (kbd "M-<SPC>") (kbd "M-x"))
+;;(define-key key-translation-map (kbd "M-<SPC>") (kbd "M-x")) ;;corfu-insert-separator
 
 (define-key key-translation-map (kbd "M-] M-]") (kbd "C-x o"))
 (define-key key-translation-map (kbd "M-] ]") (kbd "C-x o"))
@@ -44,15 +44,8 @@
 
 (global-set-key (kbd "M-o") 'project-find-file)
 
-(when (package-installed-p 'counsel)
-  (global-set-key (kbd "M-s M-s") 'counsel-rg)
-  (global-set-key (kbd "M-s s") 'counsel-grep)
-  (message "consult keymaps"))
-
-(when (package-installed-p 'consult)
-  (global-set-key (kbd "M-s M-s") 'consult-ripgrep)
-  (global-set-key (kbd "M-s s") 'consult-grep)
-  (message "consult keymaps"))
+(global-set-key (kbd "M-s M-s") 'consult-git-grep)
+(global-set-key (kbd "M-s s") 'consult-grep)
 
 (global-set-key (kbd "M-j") 'my/grep-at-point)
 (global-set-key (kbd "M-k") 'my/isearch-at-point)
@@ -64,9 +57,10 @@
 (when (package-installed-p 'citre)
   (global-set-key (kbd "M-.") 'citre-jump+)
   (global-set-key (kbd "M-,") 'citre-jump-back+)
-  (global-set-key (kbd "M-/") 'citre-jump-to-reference)
-  ;;(global-set-key (kbd "M-/") 'citre-ace-peek)
-  ;;(global-set-key (kbd "M-/") 'consult-citre)
+  ;;(global-set-key (kbd "M-/") 'citre-jump-to-reference)
+  (global-set-key (kbd "M-] r") 'citre-jump-to-reference)
+  (global-set-key (kbd "M-] p") 'citre-ace-peek)
+  (global-set-key (kbd "M-] s") 'consult-citre)
   (message "citre keymaps"))
 
 (global-set-key (kbd "M-/") 'my/xref-find-references-at-point)
@@ -83,7 +77,7 @@
 (global-set-key (kbd "M-s v") symbol-overlay-map)
 
 
-(global-set-key (kbd "M-s t") 'my/create-tags-project)
+(global-set-key (kbd "M-s t") 'my/create-project-tags)
 
 (global-set-key (kbd "M-s i") 'my/imenu)
 

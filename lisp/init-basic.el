@@ -11,13 +11,24 @@
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier 'none))
 
-(setq gc-cons-threshold (* 512 1024 1024))
-(setq read-process-output-max (* 16 1024 1024))
+;; Defer garbage collection further back in the startup process
+(setq gc-cons-threshold most-positive-fixnum)
+;; Increase how much is read from processes in a single chunk (default is 4kb)
+(setq read-process-output-max (* 64 1024))
 (setq large-file-warning-threshold (* 32 1024 1024))
+
+;; Don't pass case-insensitive to `auto-mode-alist'
+;;(setq auto-mode-case-fold nil)
 
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
 (setq initial-frame-alist (quote ((fullscreen . maximized))))
+
+;; Optimization
+(setq idle-update-delay 1.0)
+
+(setq-default cursor-in-non-selected-windows nil)
+(setq highlight-nonselected-windows nil)
 
 (when (fboundp 'tool-bar-mode)
   (tool-bar-mode -1))
@@ -28,6 +39,7 @@
       '((:eval (if (buffer-file-name)
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
+
 (defalias 'yes-or-no-p 'y-or-n-p)
 
 (setq make-backup-files nil)
@@ -35,10 +47,8 @@
 
 (global-auto-revert-mode t)
 
-(winner-mode t)
+;;(winner-mode t)
 
-;;(setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-(electric-pair-mode t)
 (show-paren-mode t)
 
 (desktop-save-mode t)
@@ -64,7 +74,7 @@
 (setq isearch-lazy-count t
       lazy-count-prefix-format "%s/%s ")
 
-(setq auto-save-visited-interval 1)
+(setq auto-save-visited-interval 3)
 (add-hook 'after-init-hook #'auto-save-visited-mode) ; auto save buffers after modify
 
 (add-hook 'after-init-hook #'save-place-mode)

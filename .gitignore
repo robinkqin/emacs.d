@@ -40,3 +40,5 @@ eaf/
 emacs-application-framework
 savefile
 amx-items
+.persistent-scratch
+persistent-scratch/

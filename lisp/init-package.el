@@ -31,11 +31,13 @@
   (package-install 'use-package))
 
 ;; should set before loading `use-package'
-(eval-and-compile
-  (setq use-package-always-ensure t)
-  (setq use-package-always-defer t)
-  (setq use-package-expand-minimally t)
-  (setq use-package-enable-imenu-support t))
+(setq use-package-always-ensure t
+      use-package-always-defer t
+      use-package-expand-minimally t
+      use-package-enable-imenu-support t)
+
+;; Required by `use-package'
+(use-package diminish :ensure t)
 
 (eval-when-compile
   (require 'use-package)
@@ -46,6 +48,15 @@
 (use-package which-key
   :init
   (which-key-mode 1))
+
+;;;; Garbage Collector Magic Hack
+;;(use-package gcmh
+;;  :diminish
+;;  :hook (emacs-startup . gcmh-mode)
+;;  :init
+;;  (setq gcmh-idle-delay 'auto
+;;        gcmh-auto-idle-delay-factor 10
+;;        gcmh-high-cons-threshold #x1000000)) ; 16MB
 
 
 (provide 'init-package)

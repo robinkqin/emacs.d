@@ -11,6 +11,42 @@
   (find-file "~/.emacs.d/init.el"))
 (global-set-key (kbd "<f12>") 'my/open-init-file)
 
+;; Dos2Unix/Unix2Dos
+(defun my/dos2unix ()
+  "Convert the current buffer to UNIX file format."
+  (interactive)
+  (set-buffer-file-coding-system 'undecided-unix nil))
+
+(defun my/unix2dos ()
+  "Convert the current buffer to DOS file format."
+  (interactive)
+  (set-buffer-file-coding-system 'undecided-dos nil))
+
+(defun my/copy-file-name ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (if filename
+        (progn
+          (kill-new filename)
+          (message "Copied '%s'" filename))
+      (warn "Current buffer is not attached to a file!"))))
+
+(defun my/save-buffer-as-utf8 (coding-system)
+  "Revert a buffer with `CODING-SYSTEM' and save as UTF-8."
+  (interactive "zCoding system for visited file (default nil):")
+  (revert-buffer-with-coding-system coding-system)
+  (set-buffer-file-coding-system 'utf-8)
+  (save-buffer))
+
+(defun my/save-buffer-gbk-as-utf8 ()
+  "Revert a buffer with GBK and save as UTF-8."
+  (interactive)
+  (save-buffer-as-utf8 'gbk))
+
+
 (defun my/project-root-dir ()
   "Return root directory of the current project."
   (let ((project (project-current)))
@@ -56,59 +92,31 @@
   (kill-new (thing-at-point 'symbol)))
 
 
-(when (package-installed-p 'counsel)
+(defun my/grep-at-point ()
+  (interactive)
+  (consult-ripgrep (my/project-root-dir) (thing-at-point 'symbol)))
 
-  (defun my/grep-at-point ()
-    (interactive)
-    (counsel-git-grep (thing-at-point 'symbol) (my/project-root-dir)))
+(defun my/grep-from-ynak ()
+  (interactive)
+  (consult-ripgrep (my/project-root-dir)
+                   (substring-no-properties (car kill-ring))))
 
-  (defun my/grep-from-ynak ()
-    (interactive)
-    (counsel-git-grep (substring-no-properties (car kill-ring)) (my/project-root-dir)))
+(defun my/isearch-at-point ()
+  (interactive)
+  (consult-line (thing-at-point 'symbol)))
 
-  (defun my/isearch-at-point ()
-    (interactive)
-    (swiper (thing-at-point 'symbol)))
+(defun my/isearch-from-ynak ()
+  (interactive)
+  (consult-line (substring-no-properties (car kill-ring))))
 
-  (defun my/isearch-from-ynak ()
-    (interactive)
-    (swiper (substring-no-properties (car kill-ring))))
+(defun my/bookmark-at-point ()
+  (interactive)
+  (consult-bookmark (thing-at-point 'symbol)))
+(defalias 'my/bookmark 'consult-bookmark)
 
-  (defalias 'my/bookmark-at-point 'counsel-bookmark)
-  (defalias 'my/bookmark 'counsel-bookmark)
-  (defalias 'my/switch-buffer 'counsel-switch-buffer)
-  (defalias 'my/recent-file 'counsel-recentf)
-  (defalias 'my/imenu 'counsel-imenu)
-  (message "counsel functions"))
-
-(when (package-installed-p 'consult)
-
-  (defun my/grep-at-point ()
-    (interactive)
-    (consult-git-grep (my/project-root-dir) (thing-at-point 'symbol)))
-
-  (defun my/grep-from-ynak ()
-    (interactive)
-    (consult-git-grep (my/project-root-dir)
-                      (substring-no-properties (car kill-ring))))
-
-  (defun my/isearch-at-point ()
-    (interactive)
-    (consult-line (thing-at-point 'symbol)))
-
-  (defun my/isearch-from-ynak ()
-    (interactive)
-    (consult-line (substring-no-properties (car kill-ring))))
-
-  (defun my/bookmark-at-point ()
-    (interactive)
-    (consult-bookmark (thing-at-point 'symbol)))
-  (defalias 'my/bookmark 'consult-bookmark)
-
-  (defalias 'my/switch-buffer 'consult-buffer)
-  (defalias 'my/recent-file 'consult-recent-file)
-  (defalias 'my/imenu 'consult-imenu)
-  (message "consult functions"))
+(defalias 'my/switch-buffer 'consult-buffer)
+(defalias 'my/recent-file 'consult-recent-file)
+(defalias 'my/imenu 'consult-imenu)
 
 
 (defvar mcfly-commands
@@ -120,14 +128,8 @@
     consult-outline
     consult-citre
     consult-eglot-symbols
-    swiper
-    counsel-ag
-    counsel-ack
-    counsel-pt
-    counsel-rg
-    counsel-grep
-    counsel-git-grep
-    counsel-locate
+    ;;citre-jump
+    ;;citre-jump+
     xref-find-references
 	xref-find-apropos))
 

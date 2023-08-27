@@ -42,6 +42,12 @@
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
+(defun childframe-workable-p ()
+  "Whether childframe is workable."
+  (not (or noninteractive
+           emacs-basic-display
+           (not (display-graphic-p)))))
+
 
 (provide 'init-const)
 

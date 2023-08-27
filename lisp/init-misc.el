@@ -10,7 +10,7 @@
   :ensure nil
   :hook (after-init . recentf-mode)
   :init (setq recentf-max-saved-items 200
-              recentf-max-menu-items 15
+              ;; recentf-max-menu-items 15
               ;; disable recentf-cleanup on Emacs start, because it can cause
               ;; problems with remote files
               recentf-auto-cleanup 'never
@@ -36,11 +36,45 @@
                                               extended-command-history)
               savehist-autosave-interval 30))
 
+(use-package time
+  :ensure nil
+  :init (setq display-time-24hr-format t
+              display-time-day-and-date t)
+  :hook (after-init . display-time-mode))
+
+;; Automatic parenthesis pairing
+(use-package elec-pair
+  :ensure nil
+  :hook (after-init . electric-pair-mode)
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
 (use-package better-defaults)
 
 ;; Highlight brackets according to their depth
 (use-package rainbow-delimiters
   :hook (prog-mode . rainbow-delimiters-mode))
+
+;; Directional window-selection routines
+(use-package windmove
+  :ensure nil
+  :hook (after-init . (lambda ()
+                        (windmove-default-keybindings 'super))))
+
+;; Restore old window configurations
+(use-package winner
+  :ensure nil
+  :commands (winner-undo winner-redo)
+  :hook (after-init . winner-mode)
+  :init (setq winner-boring-buffers '("*Completions*"
+                                      "*Compile-Log*"
+                                      "*inferior-lisp*"
+                                      "*Fuzzy Completions*"
+                                      "*Apropos*"
+                                      "*Help*"
+                                      "*cvs*"
+                                      "*Buffer List*"
+                                      "*Ibuffer*"
+                                      "*esh command on file*")))
 
 (use-package ace-window
   :bind (("C-x o" . ace-window))
@@ -51,6 +85,14 @@
 (use-package avy-zap
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
+
+;;;; Redefine M-< and M-> for some modes
+;;(use-package beginend
+;;  :diminish beginend-global-mode
+;;  :hook (after-init . beginend-global-mode)
+;;  :config (mapc (lambda (pair)
+;;                  (diminish (cdr pair)))
+;;                beginend-modes))
 
 ;; Writable `grep' buffer
 (use-package wgrep
@@ -90,18 +132,23 @@
   :bind ("C-x u" . vundo)
   :config (setq vundo-glyph-alist vundo-unicode-symbols))
 
+;;(use-package pyim-wbdict)
 (use-package pyim-basedict)
-(use-package pyim-wbdict)
 (use-package pyim
   :init
   (setq default-input-method "pyim")
   :config
-  (pyim-wbdict-v86-enable)
-  (setq pyim-default-scheme 'wubi)
-  ;;(pyim-basedict-enable)
-  ;;(setq pyim-default-scheme 'quanpin)
+  ;;(pyim-wbdict-v86-enable)
+  ;;(setq pyim-default-scheme 'wubi)
+  (pyim-basedict-enable)
+  (setq pyim-default-scheme 'quanpin)
   (setq pyim-page-length 8)
   (setq pyim-scheme--enable-assistant-p t))
+
+;;;; Jump to Chinese characters
+;;(use-package ace-pinyin
+;;  :diminish
+;;  :hook (after-init . ace-pinyin-global-mode))
 
 (use-package keyfreq
   :init
@@ -122,50 +169,6 @@
     :init (setq vterm-always-compile-module t)))
 
 (use-package format-all)
-
-(use-package magit
-  :commands (magit-status))
-
-;; Highlight uncommitted changes using VC
-(use-package diff-hl
-  :custom-face
-  (diff-hl-change ((t (:inherit custom-changed :foreground unspecified :background unspecified))))
-  (diff-hl-insert ((t (:inherit diff-added :background unspecified))))
-  (diff-hl-delete ((t (:inherit diff-removed :background unspecified))))
-  :bind (:map diff-hl-command-map
-			  ("SPC" . diff-hl-mark-hunk))
-  :hook ((after-init . global-diff-hl-mode)
-         (after-init . global-diff-hl-show-hunk-mouse-mode)
-         (dired-mode . diff-hl-dired-mode))
-  :init (setq diff-hl-draw-borders nil)
-  :config
-  ;; Highlight on-the-fly
-  (diff-hl-flydiff-mode 1)
-
-  ;; Set fringe style
-  (setq-default fringes-outside-margins t)
-
-  (with-no-warnings
-    (defun my-diff-hl-fringe-bmp-function (_type _pos)
-      "Fringe bitmap function for use as `diff-hl-fringe-bmp-function'."
-      (define-fringe-bitmap 'my-diff-hl-bmp
-        (vector (if sys/linuxp #b11111100 #b11100000))
-        1 8
-        '(center t)))
-    (setq diff-hl-fringe-bmp-function #'my-diff-hl-fringe-bmp-function)
-
-    (unless (display-graphic-p)
-      ;; Fall back to the display margin since the fringe is unavailable in tty
-      (diff-hl-margin-mode 1)
-      ;; Avoid restoring `diff-hl-margin-mode'
-      (with-eval-after-load 'desktop
-        (add-to-list 'desktop-minor-mode-table
-                     '(diff-hl-margin-mode nil))))
-
-    ;; Integration with magit
-    (with-eval-after-load 'magit
-      (add-hook 'magit-pre-refresh-hook #'diff-hl-magit-pre-refresh)
-      (add-hook 'magit-post-refresh-hook #'diff-hl-magit-post-refresh))))
 
 (use-package symbol-overlay)
 (symbol-overlay-mode 1)
@@ -229,53 +232,54 @@
 ;;;; Enforce rules for popups
 ;;(use-package popper
 ;;  :defines popper-echo-dispatch-actions
-;;  :commands popper-group-by-directory
+;;  :autoload popper-group-by-directory
 ;;  :bind (:map popper-mode-map
-;;              ("s-`" . popper-toggle-latest)
-;;              ("s-o"   . popper-cycle)
-;;              ("M-`" . popper-toggle-type))
+;;         ("C-h z"     . popper-toggle-latest)
+;;         ("C-<tab>"   . popper-cycle)
+;;         ("C-M-<tab>" . popper-toggle-type))
 ;;  :hook (emacs-startup . popper-mode)
 ;;  :init
+;;  (setq popper-group-function #'popper-group-by-directory)
 ;;  (setq popper-reference-buffers
 ;;        '("\\*Messages\\*"
 ;;          "Output\\*$" "\\*Pp Eval Output\\*$"
+;;          "^\\*eldoc.*\\*$"
 ;;          "\\*Compile-Log\\*"
 ;;          "\\*Completions\\*"
 ;;          "\\*Warnings\\*"
-;;          "\\*Flymake diagnostics.*\\*"
 ;;          "\\*Async Shell Command\\*"
 ;;          "\\*Apropos\\*"
 ;;          "\\*Backtrace\\*"
-;;          "\\*prodigy\\*"
 ;;          "\\*Calendar\\*"
-;;          "\\*Embark Actions\\*"
 ;;          "\\*Finder\\*"
 ;;          "\\*Kill Ring\\*"
-;;          "\\*Embark Export:.*\\*"
-;;          "\\*Edit Annotation.*\\*"
-;;          "\\*Flutter\\*"
+;;          "\\*Go-Translate\\*"
+;;          "\\*Embark \\(Collect\\|Live\\):.*\\*"
+;;
 ;;          bookmark-bmenu-mode
-;;          lsp-bridge-ref-mode
 ;;          comint-mode
 ;;          compilation-mode
 ;;          help-mode helpful-mode
 ;;          tabulated-list-mode
 ;;          Buffer-menu-mode
-;;          occur-mode
+;;
+;;          flymake-diagnostics-buffer-mode
+;;          flycheck-error-list-mode flycheck-verify-mode
+;;
 ;;          gnus-article-mode devdocs-mode
 ;;          grep-mode occur-mode rg-mode deadgrep-mode ag-mode pt-mode
-;;          ivy-occur-mode ivy-occur-grep-mode
-;;          process-menu-mode list-environment-mode cargo-process-mode
-;;          youdao-dictionary-mode osx-dictionary-mode fanyi-mode sdcv-mode
+;;          youdao-dictionary-mode osx-dictionary-mode fanyi-mode
 ;;
-;;          "^\\*eshell.*\\*.*$" eshell-mode
-;;          "^\\*shell.*\\*.*$"  shell-mode
-;;          "^\\*terminal.*\\*.*$" term-mode
-;;          "^\\*vterm.*\\*.*$"  vterm-mode
+;;          "^\\*Process List\\*" process-menu-mode
+;;          list-environment-mode cargo-process-mode
+;;
+;;          "^\\*eshell.*\\*.*$"       eshell-mode
+;;          "^\\*shell.*\\*.*$"        shell-mode
+;;          "^\\*terminal.*\\*.*$"     term-mode
+;;          "^\\*vterm[inal]*.*\\*.*$" vterm-mode
 ;;
 ;;          "\\*DAP Templates\\*$" dap-server-log-mode
 ;;          "\\*ELP Profiling Restuls\\*" profiler-report-mode
-;;          "\\*Flycheck errors\\*$" " \\*Flycheck checker\\*$"
 ;;          "\\*Paradox Report\\*$" "\\*package update results\\*$" "\\*Package-Lint\\*$"
 ;;          "\\*[Wo]*Man.*\\*$"
 ;;          "\\*ert\\*$" overseer-buffer-mode
@@ -284,19 +288,16 @@
 ;;          "\\*quickrun\\*$"
 ;;          "\\*tldr\\*$"
 ;;          "\\*vc-.*\\*$"
-;;          "\\*eldoc\\*"
-;;          "^\\*elfeed-entry\\*$"
 ;;          "^\\*macro expansion\\**"
 ;;
 ;;          "\\*Agenda Commands\\*" "\\*Org Select\\*" "\\*Capture\\*" "^CAPTURE-.*\\.org*"
 ;;          "\\*Gofmt Errors\\*$" "\\*Go Test\\*$" godoc-mode
-;;          "\\*docker-containers\\*" "\\*docker-images\\*" "\\*docker-networks\\*" "\\*docker-volumes\\*"
+;;          "\\*docker-.+\\*"
 ;;          "\\*prolog\\*" inferior-python-mode inf-ruby-mode swift-repl-mode
 ;;          "\\*rustfmt\\*$" rustic-compilation-mode rustic-cargo-clippy-mode
-;;          rustic-cargo-outdated-mode rustic-cargo-test-moed))
+;;          rustic-cargo-outdated-mode rustic-cargo-run-mode rustic-cargo-test-mode))
 ;;
 ;;  (setq popper-echo-dispatch-actions t)
-;;  (setq popper-group-function nil)
 ;;  :config
 ;;  (popper-echo-mode 1)
 ;;
@@ -319,6 +320,28 @@
 ;;          (when (window-live-p window)
 ;;            (delete-window window)))))
 ;;    (advice-add #'keyboard-quit :before #'popper-close-window-hack)))
+
+
+;;;; Persistent the scratch buffer
+;;(use-package persistent-scratch
+;;  :diminish
+;;  :bind (:map persistent-scratch-mode-map
+;;              ([remap kill-buffer] . (lambda (&rest _)
+;;                                       (interactive)
+;;                                       (user-error "Scratch buffer cannot be killed")))
+;;              ([remap revert-buffer] . persistent-scratch-restore)
+;;              ([remap revert-this-buffer] . persistent-scratch-restore))
+;;  :hook ((after-init . persistent-scratch-autosave-mode)
+;;         (lisp-interaction-mode . persistent-scratch-mode))
+;;  :init (setq persistent-scratch-backup-file-name-format "%Y-%m-%d"
+;;              persistent-scratch-backup-directory
+;;              (expand-file-name "persistent-scratch" user-emacs-directory)))
+
+;;(use-package disk-usage)
+;;(use-package memory-usage)
+
+;;(when (not emacs/>=29p)
+;;  (use-package sqlite3))
 
 (use-package gruvbox-theme)
 (load-theme 'gruvbox t)

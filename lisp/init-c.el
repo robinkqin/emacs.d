@@ -22,7 +22,6 @@
     :diminish
     :init (modern-c++-font-lock-global-mode t)))
 
-(use-package cmake-mode)
 
 (provide 'init-c)
 
