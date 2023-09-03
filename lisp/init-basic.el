@@ -7,18 +7,25 @@
 
 ;;; Code:
 
+;; Personal information
+(setq user-full-name "Robin"
+      user-mail-address "robinkqin@163.com")
+
 (when sys/macp
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier 'none))
 
+(when emacs/<29p
+  (setq package-native-compile nil))
+
 ;; Defer garbage collection further back in the startup process
 (setq gc-cons-threshold most-positive-fixnum)
 ;; Increase how much is read from processes in a single chunk (default is 4kb)
-(setq read-process-output-max (* 64 1024))
+(setq read-process-output-max (* 1024 1024))
 (setq large-file-warning-threshold (* 32 1024 1024))
 
 ;; Don't pass case-insensitive to `auto-mode-alist'
-;;(setq auto-mode-case-fold nil)
+(setq auto-mode-case-fold nil)
 
 (setq inhibit-startup-message t)
 (setq inhibit-splash-screen t)
@@ -40,53 +47,38 @@
                    (abbreviate-file-name (buffer-file-name))
                  "%b"))))
 
-(defalias 'yes-or-no-p 'y-or-n-p)
+(if (boundp 'use-short-answers)
+    (setq use-short-answers t)
+  (fset 'yes-or-no-p 'y-or-n-p))
 
-(setq make-backup-files nil)
-(setq auto-save-default nil)
+(setq-default indent-tabs-mode nil
+              fill-column 80
+              tab-width 4
+              c-basic-offset 4
+              c-default-style "linux")
 
-(global-auto-revert-mode t)
-
-;;(winner-mode t)
-
-(show-paren-mode t)
-
-(desktop-save-mode t)
-
-;; Save clipboard contents into kill-ring before replace them
-(setq save-interprogram-paste-before-kill t)
-
-(setq set-mark-command-repeat-pop t)       ; Repeating C-SPC after popping mark pops it again
-
-(setq dired-dwim-target t)
-(setq dired-recursive-deletes 'always)
-(setq dired-recursive-copies 'always)
-(setq dired-listing-switches "-alh --group-directories-first")
-(put 'dired-find-alternate-file 'disabled nil)
-(with-eval-after-load 'dired
-  (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
-
-(setq-default indent-tabs-mode nil)
-(setq-default tab-width 4)
-(setq-default c-basic-offset 4)
-(setq-default c-default-style "linux")
+(setq delete-by-moving-to-trash t       ; Deleting files go to OS's trash folder
+      save-interprogram-paste-before-kill t ; Save clipboard contents into kill-ring before replace them
+      make-backup-files nil
+      auto-save-default nil
+      sentence-end-double-space nil
+      word-wrap-by-category t)
 
 (setq isearch-lazy-count t
       lazy-count-prefix-format "%s/%s ")
 
-(setq auto-save-visited-interval 3)
+(setq auto-save-visited-interval 2)
 (add-hook 'after-init-hook #'auto-save-visited-mode) ; auto save buffers after modify
 
-(add-hook 'after-init-hook #'save-place-mode)
-(add-hook 'after-init-hook #'global-so-long-mode)
+(setq fast-but-imprecise-scrolling t)
+(setq redisplay-skip-fontification-on-input t)
 
-(add-hook 'prog-mode-hook
-          (lambda ()
-            (interactive)
-            (setq show-trailing-whitespace 1)))
-
-(add-hook 'prog-mode-hook #'hs-minor-mode)
-
+(when (not (display-graphic-p))
+  (setq
+   browse-url-browser-function 'eww-browse-url        ; Use eww as the default browser
+   eww-search-prefix "https://www.bing.com")      ; Use another engine for searching
+  (when sys/linuxp
+    (setq eww-search-prefix "https://www.google.com")))
 
 (provide 'init-basic)
 

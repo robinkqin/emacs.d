@@ -42,6 +42,10 @@
   (>= emacs-major-version 29)
   "Emacs is 29 or above.")
 
+(defconst emacs/<29p
+  (< emacs-major-version 29)
+  "Emacs is lower then 29.")
+
 (defun childframe-workable-p ()
   "Whether childframe is workable."
   (not (or noninteractive

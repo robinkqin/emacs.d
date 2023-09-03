@@ -10,7 +10,7 @@
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 3)
+  (setq completion-cycle-threshold 4)
 
   ;;;; Add prompt indicator to `completing-read-multiple'.
   ;;;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -57,7 +57,6 @@
 (use-package vertico
   :hook (after-init . vertico-mode)
   :init
-  (setq vertico-scroll-margin 0)
   (setq vertico-count 17)
   (setq vertico-resize nil)
   (setq vertico-cycle t)
@@ -199,7 +198,7 @@
   ;; Optionally configure preview. The default value
   ;; is 'any, such that any key triggers the preview.
   ;; (setq consult-preview-key 'any)
-  (setq consult-preview-key "M-h")
+  (setq consult-preview-key "M-.")
   ;; (setq consult-preview-key '("S-<down>" "S-<up>"))
   ;; For some commands and buffer sources it is useful to configure the
   ;; :preview-key on a per-command basis using the `consult-customize' macro.
@@ -240,9 +239,6 @@
 ;;(use-package consult-flyspell
 ;;  :bind ("M-g s" . consult-flyspell))
 
-;;(use-package consult-yasnippet
-;;  :bind ("M-g y" . consult-yasnippet))
-
 (use-package embark
   :bind
   (("C-c e e" . embark-export)
@@ -268,7 +264,8 @@
 (use-package embark-consult
   :after (embark consult)
   :bind (:map minibuffer-mode-map
-              ("C-c C-o" . embark-export))
+              ("C-c C-o" . embark-export)
+              ("C-c C-c" . embark-act))
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 
@@ -279,16 +276,16 @@
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
   (corfu-auto-prefix 2)
-  (corfu-preview-current nil)
   (corfu-auto-delay 0.1)
   (corfu-popupinfo-delay '(0.2 . 0.1))
   ;;(corfu-separator ?\s)          ;; Orderless field separator
-  ;;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
   (corfu-quit-no-match t)      ;; nil: Never quit, even if there is no match
+  (corfu-preview-current nil)
   ;;;;(corfu-preselect-first nil)    ;; Disable candidate preselection
   ;;(corfu-preselect 'prompt)      ;; Preselect the prompt
-  ;;(corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  ;;;;(corfu-echo-documentation nil) ;; Disable documentation in the echo area
+  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+  (corfu-echo-documentation nil) ;; Disable documentation in the echo area
   ;;(corfu-scroll-margin 5)        ;; Use scroll margin
 
   ;;;; Use TAB for cycling, default is `corfu-complete'.
@@ -352,12 +349,12 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  ;;(add-to-list 'completion-at-point-functions #'cape-history)
-  ;;(add-to-list 'completion-at-point-functions #'cape-keyword)
+  (add-to-list 'completion-at-point-functions #'cape-history)
+  (add-to-list 'completion-at-point-functions #'cape-keyword)
   ;;(add-to-list 'completion-at-point-functions #'cape-tex)
   ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
   ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
-  ;;(add-to-list 'completion-at-point-functions #'cape-abbrev)
+  (add-to-list 'completion-at-point-functions #'cape-abbrev)
   ;;(add-to-list 'completion-at-point-functions #'cape-dict)
   ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
   ;;(add-to-list 'completion-at-point-functions #'cape-line)

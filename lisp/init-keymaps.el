@@ -54,17 +54,17 @@
 
 (global-set-key (kbd "M-r") 'rg-menu)
 
+(global-set-key (kbd "M-?") 'my/xref-find-references-at-point)
+(global-set-key (kbd "M-s /") 'my/xref-find-references-from-yank)
+
 (when (package-installed-p 'citre)
   (global-set-key (kbd "M-.") 'citre-jump+)
   (global-set-key (kbd "M-,") 'citre-jump-back+)
-  ;;(global-set-key (kbd "M-/") 'citre-jump-to-reference)
+  (global-set-key (kbd "M-/") 'citre-jump-to-reference)
   (global-set-key (kbd "M-] r") 'citre-jump-to-reference)
   (global-set-key (kbd "M-] p") 'citre-ace-peek)
   (global-set-key (kbd "M-] s") 'consult-citre)
   (message "citre keymaps"))
-
-(global-set-key (kbd "M-/") 'my/xref-find-references-at-point)
-(global-set-key (kbd "M-s /") 'my/xref-find-references-from-yank)
 
 (global-set-key (kbd "M-t") 'format-all-buffer)
 

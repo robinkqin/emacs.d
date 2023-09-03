@@ -18,13 +18,7 @@
     :bind (:map eglot-mode-map
                 ("C-M-." . consult-eglot-symbols))))
 
-;;(use-package eglot
-;;  :hook ((c-mode . eglot-ensure)
-;;         (c++-mode . eglot-ensure)))
-
 ;;(setq eldoc-echo-area-use-multiline-p nil)
-
-;;(use-package consult-eglot)
 
 
 (provide 'init-eglot)

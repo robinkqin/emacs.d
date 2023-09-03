@@ -6,11 +6,75 @@
 
 ;;; Code:
 
+(use-package benchmark-init
+  :ensure t
+  :demand t
+  :config
+  ;; To disable collection of benchmark data after init is done.
+  (add-hook 'after-init-hook 'benchmark-init/deactivate))
+
+(use-package which-key
+  :diminish
+  :init
+  (which-key-mode 1))
+
+;; Compatibility
+(use-package compat :demand t)
+
+;; Hanlde minified code
+(use-package so-long
+  :hook (after-init . global-so-long-mode))
+
+(use-package simple
+  :ensure nil
+  :hook ((after-init . size-indication-mode)
+         (text-mode . visual-line-mode)
+         ((prog-mode markdown-mode conf-mode) . enable-trailing-whitespace))
+  :init
+  (setq column-number-mode t
+        line-number-mode t
+        ;; kill-whole-line t               ; Kill line including '\n'
+        line-move-visual nil
+        track-eol t                     ; Keep cursor at end of lines. Require line-move-visual is nil.
+        set-mark-command-repeat-pop t)  ; Repeating C-SPC after popping mark pops it again
+
+  ;; Visualize TAB, (HARD) SPACE, NEWLINE
+  (setq-default show-trailing-whitespace nil) ; Don't show trailing whitespace by default
+  (defun enable-trailing-whitespace ()
+    "Show trailing spaces and delete on saving."
+    (setq show-trailing-whitespace t)
+    (add-hook 'before-save-hook #'delete-trailing-whitespace nil t)))
+
+;;;; Show line numbers
+;;(use-package display-line-numbers
+;;  :ensure nil
+;;  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode)
+;;  :init
+;;  (setq-default display-line-numbers-width 3)
+;;  (setq display-line-numbers-width-start t))
+
+;; hideshow
+(use-package hideshow
+  :diminish hs-minor-mode
+  :hook
+  (prog-mode . hs-minor-mode))
+
+;; History
+(use-package desktop
+  :ensure nil
+  :init (desktop-save-mode t))
+
+(use-package saveplace
+  :ensure nil
+  :init
+  ;;(setq save-place-file (expand-file-name ".cache/places" user-emacs-directory))
+  :hook (after-init . save-place-mode))
+
 (use-package recentf
   :ensure nil
+  ;;:bind (("C-x C-r" . recentf-open-files))
   :hook (after-init . recentf-mode)
   :init (setq recentf-max-saved-items 200
-              ;; recentf-max-menu-items 15
               ;; disable recentf-cleanup on Emacs start, because it can cause
               ;; problems with remote files
               recentf-auto-cleanup 'never
@@ -29,6 +93,7 @@
   :hook (after-init . savehist-mode)
   :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
               history-length 1000
+              ;;savehist-file (expand-file-name ".cache/history" user-emacs-directory)
               savehist-additional-variables '(mark-ring
                                               global-mark-ring
                                               search-ring
@@ -39,14 +104,133 @@
 (use-package time
   :ensure nil
   :init (setq display-time-24hr-format t
-              display-time-day-and-date t)
+              display-time-default-load-average nil)
   :hook (after-init . display-time-mode))
 
 ;; Automatic parenthesis pairing
 (use-package elec-pair
   :ensure nil
-  :hook (after-init . electric-pair-mode)
+  :hook ((after-init . electric-pair-mode)
+         (after-init . electric-indent-mode))
   :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit))
+
+;; Delete selection if you insert
+(use-package delsel
+  :ensure nil
+  :hook (after-init . delete-selection-mode))
+
+;; Automatically reload files was modified by external program
+(use-package autorevert
+  :ensure nil
+  :diminish
+  :hook (after-init . global-auto-revert-mode))
+
+;; A comprehensive visual interface to diff & patch
+(use-package ediff
+  :ensure nil
+  :hook(;; show org ediffs unfolded
+        (ediff-prepare-buffer . outline-show-all)
+        ;; restore window layout when done
+        (ediff-quit . winner-undo))
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain
+        ediff-split-window-function 'split-window-horizontally
+        ediff-merge-split-window-function 'split-window-horizontally))
+
+(use-package dired
+  :ensure nil
+  :bind (:map dired-mode-map
+              ("C-c C-p" . wdired-change-to-wdired-mode))
+  :config
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  ;;(setq dired-listing-switches "-alh")
+  (setq dired-listing-switches "-alh --group-directories-first")
+  (setq dired-guess-shell-alist-user
+        '(("\\.pdf\\'" "open")
+          ("\\.docx\\'" "open")
+          ("\\.\\(?:djvu\\|eps\\)\\'" "open")
+          ("\\.\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)\\'" "open")
+          ("\\.\\(?:xcf\\)\\'" "open")
+          ("\\.csv\\'" "open")
+          ("\\.tex\\'" "open")
+          ("\\.\\(?:mp4\\|mkv\\|avi\\|flv\\|ogv\\)\\(?:\\.part\\)?\\'"
+           "open")
+          ("\\.\\(?:mp3\\|flac\\)\\'" "open")
+          ("\\.html?\\'" "open")
+          ("\\.md\\'" "open")))
+
+  (put 'dired-find-alternate-file 'disabled nil)
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+
+  ;; always delete and copy recursively
+  (setq dired-recursive-deletes 'always)
+  (setq dired-recursive-copies 'always))
+
+;;;; `find-dired' alternative using `fd'
+;;(when (executable-find "fd")
+;;  (use-package fd-dired))
+
+;;;; Highlight the current line
+;;(use-package hl-line
+;;  :ensure nil
+;;  :hook ((after-init . global-hl-line-mode)
+;;         ((dashboard-mode eshell-mode shell-mode term-mode vterm-mode) .
+;;          (lambda () (setq-local global-hl-line-mode nil)))))
+
+;; Highlight matching parens
+(use-package paren
+  :ensure nil
+  :hook (after-init . show-paren-mode)
+  :init (setq show-paren-when-point-inside-paren t
+              show-paren-when-point-in-periphery t)
+  :config
+  (with-no-warnings
+    ;; Display matching line for off-screen paren.
+    (defun display-line-overlay (pos str &optional face)
+      "Display line at POS as STR with FACE.
+
+FACE defaults to inheriting from default and highlight."
+      (let ((ol (save-excursion
+                  (goto-char pos)
+                  (make-overlay (line-beginning-position)
+                                (line-end-position)))))
+        (overlay-put ol 'display str)
+        (overlay-put ol 'face
+                     (or face '(:inherit highlight)))
+        ol))
+
+    (defvar-local show-paren--off-screen-overlay nil)
+    (defun show-paren-off-screen (&rest _args)
+      "Display matching line for off-screen paren."
+      (when (overlayp show-paren--off-screen-overlay)
+        (delete-overlay show-paren--off-screen-overlay))
+      ;; Check if it's appropriate to show match info,
+      (when (and (overlay-buffer show-paren--overlay)
+                 (not (or cursor-in-echo-area
+                          executing-kbd-macro
+                          noninteractive
+                          (minibufferp)
+                          this-command))
+                 (and (not (bobp))
+                      (memq (char-syntax (char-before)) '(?\) ?\$)))
+                 (= 1 (logand 1 (- (point)
+                                   (save-excursion
+                                     (forward-char -1)
+                                     (skip-syntax-backward "/\\")
+                                     (point))))))
+        ;; Rebind `minibuffer-message' called by `blink-matching-open'
+        ;; to handle the overlay display.
+        (cl-letf (((symbol-function #'minibuffer-message)
+                   (lambda (msg &rest args)
+                     (let ((msg (apply #'format-message msg args)))
+                       (setq show-paren--off-screen-overlay
+                             (display-line-overlay
+                              (window-start) msg ))))))
+          (blink-matching-open))))
+    (advice-add #'show-paren-function :after #'show-paren-off-screen)))
+
 
 (use-package better-defaults)
 
@@ -86,13 +270,21 @@
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
 
-;;;; Redefine M-< and M-> for some modes
-;;(use-package beginend
-;;  :diminish beginend-global-mode
-;;  :hook (after-init . beginend-global-mode)
-;;  :config (mapc (lambda (pair)
-;;                  (diminish (cdr pair)))
-;;                beginend-modes))
+;; Redefine M-< and M-> for some modes
+(use-package beginend
+  :diminish beginend-global-mode
+  :hook (after-init . beginend-global-mode)
+  :config (mapc (lambda (pair)
+                  (diminish (cdr pair)))
+                beginend-modes))
+
+;; Move to the beginning/end of line or code
+(use-package mwim
+  :bind (("C-a" . mwim-beginning-of-code-or-line)
+         ("C-e" . mwim-end-of-code-or-line)
+         ("<home>" . mwim-beginning-of-line-or-code)
+         ("<end>" . mwim-end-of-line-or-code)))
+
 
 ;; Writable `grep' buffer
 (use-package wgrep
@@ -145,10 +337,10 @@
   (setq pyim-page-length 8)
   (setq pyim-scheme--enable-assistant-p t))
 
-;;;; Jump to Chinese characters
-;;(use-package ace-pinyin
-;;  :diminish
-;;  :hook (after-init . ace-pinyin-global-mode))
+;; Jump to Chinese characters
+(use-package ace-pinyin
+  :diminish
+  :hook (after-init . ace-pinyin-global-mode))
 
 (use-package keyfreq
   :init
@@ -170,8 +362,12 @@
 
 (use-package format-all)
 
-(use-package symbol-overlay)
-(symbol-overlay-mode 1)
+(use-package symbol-overlay
+  :diminish
+  :config
+  (define-key symbol-overlay-map (kbd "h") 'nil)
+  :init
+  (symbol-overlay-mode 1))
 
 (when (or sys/macp sys/win32p)
   (use-package exec-path-from-shell))
@@ -337,14 +533,32 @@
 ;;              persistent-scratch-backup-directory
 ;;              (expand-file-name "persistent-scratch" user-emacs-directory)))
 
-;;(use-package disk-usage)
-;;(use-package memory-usage)
-
 ;;(when (not emacs/>=29p)
 ;;  (use-package sqlite3))
 
+;; Sqlite
+(when (fboundp 'sqlite-open)
+  (use-package emacsql-sqlite-builtin))
+
+;; Open files as another user
+(unless sys/win32p
+  (use-package sudo-edit))
+
+;; Allow access from emacsclient
+(add-hook 'after-init-hook
+          (lambda ()
+            (require 'server)
+            (unless (server-running-p)
+              (server-start)
+              (message "server-started"))))
+
+
+(use-package doom-themes)
 (use-package gruvbox-theme)
+
 (load-theme 'gruvbox t)
+;;(load-theme 'doom-dark+ t)
+;;(load-theme 'doom-one t)
 
 
 (provide 'init-misc)

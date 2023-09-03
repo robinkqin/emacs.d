@@ -45,6 +45,15 @@
 (when sys/macp
   (use-package osx-dictionary))
 
+;;(use-package go-translate
+;;    :bind (("C-c d g" . gts-do-translate))
+;;    :init (setq gts-translate-list '(("en" "zh") ("zh" "en"))))
+
+;;(use-package youdao-dictionary
+;;  :commands (youdao-dictionary-search-at-point+)
+;;  :init
+;;  (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point+))
+
 ;;;; On-the-fly spell checker
 ;;(use-package flyspell
 ;;  :ensure nil
@@ -58,6 +67,10 @@
 ;;  :init (setq flyspell-issue-message-flag nil
 ;;              ispell-program-name "aspell"
 ;;              ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
+
+;;(use-package corfu-english-helper
+;;  :ensure nil
+;;  :commands toggle-corfu-english-helper)
 
 
 (provide 'init-dict)

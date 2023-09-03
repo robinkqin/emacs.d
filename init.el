@@ -7,6 +7,19 @@
 
 ;;; Code:
 
+;;mkdir -p ~/.config/systemd/user
+;;cp /usr/lib/systemd/user/emacs.service ~/.config/systemd/user
+;;systemctl --user enable emacs
+;;systemctl --user start emacs
+
+;;~/.bashrc
+;;alias ec='emacsclient -t -a ""'
+;;alias sec='sudo emacsclient -t -a ""'
+;;alias vim='emacsclient -t -a ""'
+;;alias emacs='emacsclient -t -a ""'
+;;emacsclient -t -a "" $*
+;;emacsclient -t -a "" "$@"
+
 ;; consult-ripgrep: #require#!init !sdcv !color
 ;; consult-line:  require !init
 
@@ -55,8 +68,8 @@
 (require 'init-vertico)
 (message "init vertico done")
 
-;;(require 'init-yasnippet)
-;;(message "init yasnippet done")
+;;(require 'init-org)
+;;(message "init org done")
 
 (require 'init-dict)
 (message "init dict done")

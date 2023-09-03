@@ -36,27 +36,24 @@
       use-package-expand-minimally t
       use-package-enable-imenu-support t)
 
-;; Required by `use-package'
-(use-package diminish :ensure t)
-
 (eval-when-compile
   (require 'use-package)
   (setq use-package-verbose t))
 
+;; Required by `use-package'
+(use-package diminish)
+(use-package bind-key)
+
+;; Update GPG keyring for GNU ELPA
 (use-package gnu-elpa-keyring-update)
 
-(use-package which-key
-  :init
-  (which-key-mode 1))
-
-;;;; Garbage Collector Magic Hack
-;;(use-package gcmh
-;;  :diminish
-;;  :hook (emacs-startup . gcmh-mode)
-;;  :init
-;;  (setq gcmh-idle-delay 'auto
-;;        gcmh-auto-idle-delay-factor 10
-;;        gcmh-high-cons-threshold #x1000000)) ; 16MB
+;;;; Update packages
+;;(unless (fboundp 'package-upgrade-all)
+;;  (use-package auto-package-update
+;;    :init
+;;    (setq auto-package-update-delete-old-versions t
+;;          auto-package-update-hide-results t)
+;;    (defalias 'package-upgrade-all #'auto-package-update-now)))
 
 
 (provide 'init-package)

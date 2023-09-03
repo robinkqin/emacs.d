@@ -6,31 +6,6 @@
 
 ;;; Code:
 
-(when my/lsp-bridge-enable
-
-  (message "lsp-bridge-enable")
-
-  ;; flycheck
-  ;; treesitter
-
-  (use-package markdown-mode
-    :mode ("README\\.md\\'" . gfm-mode)
-    :init (setq markdown-command "multimarkdown")
-    :bind (:map markdown-mode-map
-                ("C-c C-e" . markdown-do)))
-
-  ;; Yet another snippet extension
-  (use-package yasnippet
-    :hook (after-init . yas-global-mode))
-  ;; Collection of yasnippet snippets
-  (use-package yasnippet-snippets)
-
-  (message "init lsp-bridge")
-  (setq lsp-bridge-enable-debug t)
-  (require 'lsp-bridge)
-  (global-lsp-bridge-mode))
-
-
 (when my/eglot-enable
 
   (message "eglot enable")
@@ -39,27 +14,40 @@
   (message "init flymake done")
 
   (require 'init-eglot)
-  (message "init eglot done")
+  (message "init eglot done"))
 
-  ;;;; company
-  ;;(use-package company
-  ;;  :init
-  ;;  ;;(global-company-mode 1)
-  ;;  (setq company-show-quick-access 1)
-  ;;  (setq company-idle-delay 0)
-  ;;  (setq company-minimum-prefix-length 3))
-  ;;
-  ;;(add-hook 'after-init-hook 'global-company-mode)
-  ;;
-  ;;(use-package consult-company)
-  )
+(when my/lsp-bridge-enable
 
+  (message "lsp-bridge enable")
 
-;;;; Show function arglist or variable docstring
-;;(use-package eldoc
-;;  :ensure nil
-;;  :diminish)
-;;
+  (use-package markdown-mode
+    :mode ("README\\.md\\'" . gfm-mode)
+    :init (setq markdown-command "multimarkdown")
+    :bind (:map markdown-mode-map
+                ("C-c C-e" . markdown-do)))
+
+  (require 'init-yasnippet)
+  (message "init yasnippet done")
+
+  ;;(setq lsp-bridge-enable-debug t)
+  (setq lsp-bridge-enable-log nil)
+  (require 'lsp-bridge)
+  (global-lsp-bridge-mode)
+  (message "init lsp-bridge done"))
+
+;; Show function arglist or variable docstring
+(use-package eldoc
+  :ensure nil
+  :diminish)
+
+;; Hungry deletion
+(use-package hungry-delete
+  :diminish
+  :hook (after-init . global-hungry-delete-mode)
+  :init (setq hungry-delete-chars-to-skip " \t\f\v"
+              hungry-delete-except-modes
+              '(help-mode minibuffer-mode minibuffer-inactive-mode calc-mode)))
+
 ;;;; Search tool
 ;;(use-package grep
 ;;  :ensure nil
@@ -107,6 +95,17 @@
 ;;(use-package csv-mode)
 
 (use-package cmake-mode)
+
+;;(use-package dumb-jump
+;;  :init
+;;  (add-hook 'xref-backend-functions #'dumb-jump-xref-activate)
+;;  (setq dumb-jump-selector 'completing-read))
+
+(defun endless/c-hook ()
+  (setq indent-tabs-mode nil))
+(add-hook 'c-mode-hook #'endless/c-hook)
+(add-hook 'c++-mode-hook #'endless/c-hook)
+
 
 (provide 'init-program)
 

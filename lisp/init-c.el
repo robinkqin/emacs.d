@@ -12,14 +12,13 @@
   :bind (:map c-mode-base-map
 			  ("C-c c" . compile))
   :init
-  (setq-default indent-tabs-mode nil)
-  (setq-default tab-width 4)
-  (setq-default c-basic-offset 4)
-  (setq-default c-default-style "linux")
+  (setq-default indent-tabs-mode nil
+                tab-width 4
+                c-basic-offset 4
+                c-default-style "linux")
   :config
   (use-package modern-cpp-font-lock
-    :ensure
-    :diminish
+    :diminish modern-c++-font-lock-mode
     :init (modern-c++-font-lock-global-mode t)))
 
 
