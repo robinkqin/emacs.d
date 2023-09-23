@@ -1,8 +1,6 @@
 ;; init-yasnippet.el --- Initialize yasnippet configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; Yasnippet configurations.
-;;
 
 ;;; Code:
 

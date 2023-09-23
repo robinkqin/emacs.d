@@ -1,12 +1,9 @@
 ;;; init-fonts.el --- fonts configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; fonts configurations.
-;;
 
 ;;; Code:
 
-;; Set UTF-8 as the default coding system
 (when (fboundp 'set-charset-priority)
   (set-charset-priority 'unicode))
 (setq locale-coding-system 'utf-8)
@@ -20,12 +17,11 @@
 (set-keyboard-coding-system 'utf-8)
 (setq default-buffer-file-coding-system 'utf-8)
 
-;; Fonts
 (defun font-installed-p (font-name)
   "Check if font with FONT-NAME is available."
   (find-font (font-spec :name font-name)))
 
-(defun centaur-setup-fonts ()
+(defun my/setup-fonts ()
   "Setup fonts."
   (when (display-graphic-p)
     ;; Set default font
@@ -36,7 +32,7 @@
              return (set-face-attribute 'default nil
                                         :family font
                                         :height (cond (sys/macp 175)
-                                                      (sys/win32p 130)
+                                                      (sys/win32p 125)
                                                       (t 125))))
 
     ;; Specify font for all unicode characters
@@ -64,9 +60,9 @@
                       (setq face-font-rescale-alist `((,font . 1.0)))
                       (set-fontset-font t '(#x4e00 . #x9fff) (font-spec :family font))))))
 
-(centaur-setup-fonts)
-(add-hook 'window-setup-hook #'centaur-setup-fonts)
-(add-hook 'server-after-make-frame-hook #'centaur-setup-fonts)
+(my/setup-fonts)
+(add-hook 'window-setup-hook #'my/setup-fonts)
+(add-hook 'server-after-make-frame-hook #'my/setup-fonts)
 
 
 (provide 'init-fonts)

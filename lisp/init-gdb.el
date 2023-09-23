@@ -1,20 +1,16 @@
 ;;; init-gdb.el --- gdb configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; gdb configurations.
-;;
 
 ;;; Code:
 
-(setq gud-tooltip-mode t)   ;;minor mode当鼠标放到变量上后，会弹出tooltip来显示变量的值
 (global-set-key [f5] 'gud-cont)
 (global-set-key [f6] 'gud-finish)
 (global-set-key [f7] 'gud-step)
 (global-set-key [f8] 'gud-next)
 (global-set-key [f9] 'gud-break)
-;;(global-set-key (kbd "<f12>") 'gud-remove)
 
-;;;; set gdb multi-windows when open
+;; set gdb multi-windows when open
 (setq gdb-many-windows t)
 
 ;;;; customize the gdb multi-windows
@@ -37,8 +33,7 @@
          (gud-find-file (car gud-last-last-frame))
        (if gdb-main-file
            (gud-find-file gdb-main-file)
-         ;; Put buffer list in window if we
-         ;; can't find a source file.
+         ;; Put buffer list in window if we can't find a source file.
          (list-buffers-noselect))))
     (setq gdb-source-window (selected-window))
     (let ((win3 (split-window nil (/ (* (window-height) 3) 4))))  ;; io

@@ -1,12 +1,9 @@
 ;;; init-vertico.el --- vertico configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; vertico configurations.
-;;
 
 ;;; Code:
 
-;; A few more useful configurations...
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
@@ -16,10 +13,10 @@
   ;;;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
   ;;(defun crm-indicator (args)
   ;;  (cons (format "[CRM%s] %s"
-  ;;  	          (replace-regexp-in-string
-  ;;  	           "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
-  ;;  	           crm-separator)
-  ;;  	          (car args))
+  ;;              (replace-regexp-in-string
+  ;;               "\\`\\[.*?]\\*\\|\\[.*?]\\*\\'" ""
+  ;;               crm-separator)
+  ;;              (car args))
   ;;        (cdr args)))
   ;;(advice-add #'completing-read-multiple :filter-args #'crm-indicator)
   ;;
@@ -44,36 +41,45 @@
   ;; Enable recursive minibuffers
   (setq enable-recursive-minibuffers t))
 
-;; Optionally use the `orderless' completion style.
+;; support pinyin first character match for orderless, avy etc.
+(use-package pinyinlib
+  :ensure t)
+
 (use-package orderless
+  :ensure t
   :init
   ;; Configure a custom style dispatcher (see the Consult wiki)
   ;; (setq orderless-style-dispatchers '(+orderless-consult-dispatch orderless-affix-dispatch)
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
-	    ;;completion-category-defaults nil
-	    completion-category-overrides '((file (styles basic partial-completion)))))
+        ;;completion-category-defaults nil
+        completion-category-overrides '((file (styles basic partial-completion))))
+  :config
+  ;; make completion support pinyin, refer to
+  ;; https://emacs-china.org/t/vertico/17913/2
+  (defun completion--regex-pinyin (str)
+    (orderless-regexp (pinyinlib-build-regexp-string str)))
+  (add-to-list 'orderless-matching-styles 'completion--regex-pinyin))
 
 (use-package vertico
+  :ensure t
   :hook (after-init . vertico-mode)
   :init
-  (setq vertico-count 17)
-  (setq vertico-resize nil)
-  (setq vertico-cycle t)
+  (setq vertico-count 17
+        vertico-resize nil
+        vertico-cycle t)
   :bind (:map vertico-map
               ("C-M-n" . vertico-next-group)
               ("C-M-p" . vertico-previous-group)
               :map minibuffer-local-map
               ("C-w" . backward-kill-word)))
 
-;; Configure directory extension.
 (use-package vertico-directory
   :after vertico
-  :ensure nil
   ;; More convenient directory navigation commands
   :bind (:map vertico-map
-	          ("RET" . vertico-directory-enter)
-	          ("DEL" . vertico-directory-delete-char)
+              ("RET" . vertico-directory-enter)
+              ("DEL" . vertico-directory-delete-char)
               ("M-DEL" . vertico-directory-delete-word))
   ;; Tidy shadowed file names
   :hook (rfn-eshadow-update-overlay . vertico-directory-tidy))
@@ -83,9 +89,14 @@
 (global-set-key (kbd "<f2>") 'vertico-repeat)
 (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
 
+(when (display-graphic-p)
+  (use-package vertico-posframe
+    :ensure t
+    :config
+    (vertico-posframe-mode 1)))
 
-;; Enable rich annotations using the Marginalia package
 (use-package marginalia
+  :ensure t
   ;;;; Either bind `marginalia-cycle' globally or only in the minibuffer
   ;;:bind (("M-A" . marginalia-cycle)
   ;;       :map minibuffer-local-map
@@ -96,14 +107,14 @@
 ;; Otherwise use the default `completion--in-region' function.
 (setq completion-in-region-function
       (lambda (&rest args)
-	    (apply (if vertico-mode
-		           #'consult-completion-in-region
-		         #'completion--in-region)
-	           args)))
+        (apply (if vertico-mode
+                   #'consult-completion-in-region
+                 #'completion--in-region)
+               args)))
 
-
-;; Example configuration for Consult
 (use-package consult
+  :ensure t
+  :after vertico
   ;; Replace bindings. Lazily loaded due by `use-package'.
   :bind (;; C-c bindings in `mode-specific-map'
          ("C-c M-x" . consult-mode-command)
@@ -167,8 +178,8 @@
                     "Insert the currunt symbol."
                     (interactive)
                     (insert (save-excursion
-		                      (set-buffer (window-buffer (minibuffer-selected-window)))
-		                      (or (thing-at-point 'symbol t) "")))))
+                              (set-buffer (window-buffer (minibuffer-selected-window)))
+                              (or (thing-at-point 'symbol t) "")))))
          ("M-s" . consult-history)                 ;; orig. next-matching-history-element
          ("M-r" . consult-history))                ;; orig. previous-matching-history-element
 
@@ -236,10 +247,9 @@
   ;; (setq consult-project-function nil)
   )
 
-;;(use-package consult-flyspell
-;;  :bind ("M-g s" . consult-flyspell))
-
 (use-package embark
+  :ensure t
+  :after vertico
   :bind
   (("C-c e e" . embark-export)
    ("C-c e a" . embark-act)         ;; pick some comfortable binding
@@ -260,8 +270,8 @@
                  nil
                  (window-parameters (mode-line-format . none)))))
 
-;; Consult users will also want the embark-consult package.
 (use-package embark-consult
+  :ensure t
   :after (embark consult)
   :bind (:map minibuffer-mode-map
               ("C-c C-o" . embark-export)
@@ -271,7 +281,7 @@
 
 (global-unset-key (kbd "M-i"))
 (use-package corfu
-  ;; Optional customizations
+  :ensure t
   :custom
   (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
   (corfu-auto t)                 ;; Enable auto completion
@@ -318,9 +328,11 @@
 
 (unless (display-graphic-p)
   (use-package corfu-terminal
+    :ensure t
     :hook (global-corfu-mode . corfu-terminal-mode)))
 
 (use-package cape
+  :ensure t
   ;; Bind dedicated completion commands
   ;; Alternative prefix keys: C-c p, M-p, M-+, ...
   :bind (;;("M-i M-i" . completion-at-point) ;; capf
@@ -360,7 +372,6 @@
   ;;(add-to-list 'completion-at-point-functions #'cape-line)
 
   (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
-
 
 (provide 'init-vertico)
 

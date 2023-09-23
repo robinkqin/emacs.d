@@ -1,12 +1,8 @@
 ;;; init-package.el --- Initialize package configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; Emacs Package management configurations.
-;;
 
 ;;; Code:
-
-(require 'package)
 
 ;; (setq url-proxy-services
 ;;       '(("no_proxy" . "^\\(localhost\\|10.*\\)")
@@ -23,38 +19,23 @@
                          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")))
 
 (unless (bound-and-true-p package--initialized)
-  (setq package-enable-at-startup nil)
   (package-initialize))
 
-(unless (package-installed-p 'use-package)
+(unless (fboundp 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
-;; should set before loading `use-package'
-(setq use-package-always-ensure t
-      use-package-always-defer t
+(setq use-package-enable-imenu-support t
       use-package-expand-minimally t
-      use-package-enable-imenu-support t)
+      use-package-verbose t)
 
-(eval-when-compile
-  (require 'use-package)
-  (setq use-package-verbose t))
+(require 'use-package)
 
-;; Required by `use-package'
-(use-package diminish)
-(use-package bind-key)
+(use-package gnu-elpa-keyring-update
+  :ensure t)
 
-;; Update GPG keyring for GNU ELPA
-(use-package gnu-elpa-keyring-update)
-
-;;;; Update packages
-;;(unless (fboundp 'package-upgrade-all)
-;;  (use-package auto-package-update
-;;    :init
-;;    (setq auto-package-update-delete-old-versions t
-;;          auto-package-update-hide-results t)
-;;    (defalias 'package-upgrade-all #'auto-package-update-now)))
-
+(use-package diminish
+  :ensure t)
 
 (provide 'init-package)
 

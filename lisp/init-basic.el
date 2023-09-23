@@ -1,84 +1,188 @@
-;;; init-basic.el --- Emacs Configuration.	-*- lexical-binding: t no-byte-compile: t -*-
-;;; Commentary:
-;;
-;; Emacs Configuration.
-;;
+;;; init-basic.el --- Emacs Configuration. -*- lexical-binding: t -*-
 
+;;; Commentary:
 
 ;;; Code:
-
-;; Personal information
-(setq user-full-name "Robin"
-      user-mail-address "robinkqin@163.com")
 
 (when sys/macp
   (setq mac-command-modifier 'meta)
   (setq mac-option-modifier 'none))
 
-(when emacs/<29p
-  (setq package-native-compile nil))
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
+(when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
+(when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
-;; Defer garbage collection further back in the startup process
-(setq gc-cons-threshold most-positive-fixnum)
-;; Increase how much is read from processes in a single chunk (default is 4kb)
-(setq read-process-output-max (* 1024 1024))
-(setq large-file-warning-threshold (* 32 1024 1024))
+(defalias 'list-buffers 'ibuffer)
 
-;; Don't pass case-insensitive to `auto-mode-alist'
-(setq auto-mode-case-fold nil)
+;;(when (not (display-graphic-p))
+;;  (setq
+;;   eww-search-prefix "https://www.bing.com"
+;;   ;;eww-search-prefix "https://www.google.com"
+;;   browse-url-browser-function 'eww-browse-url))
 
-(setq inhibit-startup-message t)
-(setq inhibit-splash-screen t)
-(setq initial-frame-alist (quote ((fullscreen . maximized))))
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+(add-hook 'window-size-change-functions #'frame-hide-title-bar-when-maximized)
 
-;; Optimization
-(setq idle-update-delay 1.0)
+(use-package time
+  :init (setq display-time-24hr-format t
+              display-time-default-load-average nil)
+  :hook (after-init . display-time-mode))
 
-(setq-default cursor-in-non-selected-windows nil)
-(setq highlight-nonselected-windows nil)
+;;(use-package display-line-numbers
+;;  :init
+;;  (setq-default display-line-numbers-width 3)
+;;  (setq display-line-numbers-width-start t)
+;;  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode))
 
-(when (fboundp 'tool-bar-mode)
-  (tool-bar-mode -1))
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+(use-package files
+  :init
+  (setq auto-save-visited-interval 3
+        save-silently t
+        confirm-nonexistent-file-or-buffer nil
+        large-file-warning-threshold (* 32 1024 1024)
+        read-process-output-max (* 1024 1024))
+  :hook (after-init . auto-save-visited-mode))
 
-(setq frame-title-format
-      '((:eval (if (buffer-file-name)
-                   (abbreviate-file-name (buffer-file-name))
-                 "%b"))))
+(use-package simple
+  :init
+  (setq column-number-mode t
+        line-number-mode t
+        ;;kill-whole-line t               ; Kill line including '\n'
+        line-move-visual nil
+        track-eol t                     ; Keep cursor at end of lines. Require line-move-visual is nil.
+        set-mark-command-repeat-pop t)  ; Repeating C-SPC after popping mark pops it again
 
-(if (boundp 'use-short-answers)
-    (setq use-short-answers t)
-  (fset 'yes-or-no-p 'y-or-n-p))
+  (setq-default save-interprogram-paste-before-kill t
+                auto-window-vscroll nil
+                inhibit-startup-screen t  ; disable the startup screen splash
+                isearch-allow-motion t
+                isearch-lazy-count t
+                make-backup-files nil   ; disable backup file
+                use-short-answers t)
 
-(setq-default indent-tabs-mode nil
-              fill-column 80
-              tab-width 4
-              c-basic-offset 4
-              c-default-style "linux")
+  (setq-default indent-tabs-mode nil
+                word-wrap t
+                fill-column 80
+                tab-width 4
+                c-basic-offset 4
+                c-default-style "linux")
 
-(setq delete-by-moving-to-trash t       ; Deleting files go to OS's trash folder
-      save-interprogram-paste-before-kill t ; Save clipboard contents into kill-ring before replace them
-      make-backup-files nil
-      auto-save-default nil
-      sentence-end-double-space nil
-      word-wrap-by-category t)
+  ;; Visualize TAB, (HARD) SPACE, NEWLINE
+  (setq-default show-trailing-whitespace nil) ; Don't show trailing whitespace by default
+  (defun my/enable-trailing-whitespace ()
+    "Show trailing spaces and delete on saving."
+    (setq show-trailing-whitespace t)
+    (add-hook 'before-save-hook #'delete-trailing-whitespace nil t))
+  :hook ((after-init . size-indication-mode)
+         (text-mode . visual-line-mode)
+         ((prog-mode markdown-mode conf-mode) . my/enable-trailing-whitespace)))
 
-(setq isearch-lazy-count t
-      lazy-count-prefix-format "%s/%s ")
+(use-package desktop
+  :init (desktop-save-mode t))
 
-(setq auto-save-visited-interval 2)
-(add-hook 'after-init-hook #'auto-save-visited-mode) ; auto save buffers after modify
+(use-package saveplace
+  :init
+  (setq save-place-forget-unreadable-files t)
+  :hook (after-init . save-place-mode))
 
-(setq fast-but-imprecise-scrolling t)
-(setq redisplay-skip-fontification-on-input t)
+(use-package recentf
+  :bind (("C-c r" . recentf-open-files))
+  :hook (after-init . recentf-mode)
+  :init (setq recentf-max-saved-items 200
+              recentf-auto-cleanup 'never
+              recentf-exclude
+              '("\\.?cache" ".cask" "url" "COMMIT_EDITMSG\\'" "bookmarks"
+                "\\.\\(?:gz\\|gif\\|svg\\|png\\|jpe?g\\|bmp\\|xpm\\)$"
+                "\\.?ido\\.last$" "\\.revive$" "/G?TAGS$" "/.elfeed/"
+                "^/tmp/" "^/var/folders/.+$" "^/ssh:" "/persp-confs/"
+                (lambda (file) (file-in-directory-p file package-user-dir))))
+  :config
+  (push (expand-file-name recentf-save-file) recentf-exclude)
+  (add-to-list 'recentf-filename-handlers #'abbreviate-file-name))
 
-(when (not (display-graphic-p))
-  (setq
-   browse-url-browser-function 'eww-browse-url        ; Use eww as the default browser
-   eww-search-prefix "https://www.bing.com")      ; Use another engine for searching
-  (when sys/linuxp
-    (setq eww-search-prefix "https://www.google.com")))
+(use-package savehist
+  :hook (after-init . savehist-mode)
+  :init (setq enable-recursive-minibuffers t ; Allow commands in minibuffers
+              history-length 1000
+              ;;savehist-file (expand-file-name ".cache/history" user-emacs-directory)
+              savehist-additional-variables '(mark-ring
+                                              global-mark-ring
+                                              search-ring
+                                              regexp-search-ring
+                                              extended-command-history)
+              savehist-autosave-interval 30))
+
+(use-package hideshow
+  :diminish hs-minor-mode
+  :hook (prog-mode . hs-minor-mode))
+
+(use-package paren
+  :init
+  (setq show-paren-when-point-in-periphery t
+        show-paren-when-point-inside-paren t)
+  :hook (after-init . show-paren-mode))
+
+(use-package elec-pair
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  :hook ((after-init . electric-pair-mode)
+         (after-init . electric-indent-mode)
+         (after-init . minibuffer-electric-default-mode)))
+
+(use-package delsel
+  :hook (after-init . delete-selection-mode))
+
+(use-package autorevert
+  :diminish
+  :hook (after-init . global-auto-revert-mode))
+
+(use-package dired
+  :bind (:map dired-mode-map
+              ("C-c C-p" . wdired-change-to-wdired-mode))
+  :config
+  (setq delete-by-moving-to-trash t)
+  (setq dired-dwim-target t)
+  (setq dired-listing-switches "-alh --group-directories-first")
+  (setq dired-guess-shell-alist-user
+        '(("\\.pdf\\'" "open")
+          ("\\.docx\\'" "open")
+          ("\\.\\(?:djvu\\|eps\\)\\'" "open")
+          ("\\.\\(?:jpg\\|jpeg\\|png\\|gif\\|xpm\\)\\'" "open")
+          ("\\.\\(?:xcf\\)\\'" "open")
+          ("\\.csv\\'" "open")
+          ("\\.tex\\'" "open")
+          ("\\.\\(?:mp4\\|mkv\\|avi\\|flv\\|ogv\\)\\(?:\\.part\\)?\\'"
+           "open")
+          ("\\.\\(?:mp3\\|flac\\)\\'" "open")
+          ("\\.html?\\'" "open")
+          ("\\.md\\'" "open")))
+
+  (put 'dired-find-alternate-file 'disabled nil)
+  (with-eval-after-load 'dired
+    (define-key dired-mode-map (kbd "RET") 'dired-find-alternate-file))
+
+  (setq dired-recursive-deletes 'always
+        dired-recursive-copies 'always))
+
+(use-package ediff
+  :hook((ediff-prepare-buffer . outline-show-all)
+        (ediff-quit . winner-undo))
+  :config
+  (setq ediff-window-setup-function 'ediff-setup-windows-plain
+        ediff-split-window-function 'split-window-horizontally
+        ediff-merge-split-window-function 'split-window-horizontally))
+
+(use-package xref
+  :init
+  (setq xref-search-program 'ripgrep
+        xref-auto-jump-to-first-definition 'show
+        xref-auto-jump-to-first-xref 'show))
+
+(use-package so-long
+  :hook (after-init . global-so-long-mode))
+
+(put 'narrow-to-region 'disabled nil)
+(defun narrow-to-region-pop-mark (_ _) (pop-mark))
+(advice-add #'narrow-to-region :after #'narrow-to-region-pop-mark)
 
 (provide 'init-basic)
 

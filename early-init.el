@@ -1,10 +1,11 @@
-;;; early-init.el --- Emacs 27 introduces early-init.el, which runs before init.el
+;;; early-init.el --- Emacs 27 introduces early-init.el -*- lexical-binding: t -*-
+
 ;;; Commentary:
-;; Runs before package and UI initializetion happens.
+
 ;;; Code:
 
-(unless (>= emacs-major-version 29)
-  (error "ONLY EMACS v29+ IS SUPPORTED!"))
+(unless (>= emacs-major-version 27)
+  (error "ONLY EMACS v27+ IS SUPPORTED!"))
 
 ;; For speed up the startup, please do NOT forget reset it to default
 ;; after Emacs after-init-hook, or it may cause freezes.
@@ -29,9 +30,11 @@
 (setq frame-inhibit-implied-resize t)
 
 ;; Clean GUI
-(push '(scroll-bar-mode . nil) default-frame-alist)
+(push '(menu-bar-mode . nil) default-frame-alist)
 (push '(tool-bar-mode . nil) default-frame-alist)
+(push '(scroll-bar-mode . nil) default-frame-alist)
 
+(when (fboundp 'menu-bar-mode) (menu-bar-mode -1))
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
@@ -40,7 +43,5 @@
 
 (prefer-coding-system 'utf-8)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;; early-init.el ends here
-;; Local Variables:
-;; byte-compile-warnings: (not free-vars)
-;; END:

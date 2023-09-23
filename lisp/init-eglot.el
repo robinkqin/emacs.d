@@ -1,25 +1,23 @@
-;;; init-basic.el --- basic configurations.	-*- lexical-binding: t -*-
+;;; init-eglot.el --- eglot configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; basic configurations.
-;;
 
 ;;; Code:
 
 ;; compile_commands.json
 
+(require 'init-flymake)
+(message "init flymake done")
+
 (use-package eglot
-  :hook ((prog-mode . (lambda ()
-                        (unless (derived-mode-p 'emacs-lisp-mode 'lisp-mode 'makefile-mode 'snippet-mode)
-                          (eglot-ensure))))
-         ((markdown-mode yaml-mode yaml-ts-mode) . eglot-ensure))
+  :hook (prog-mode . eglot-ensure))
+
+(use-package eglot
+  :hook (prog-mode . eglot-ensure)
   :config
   (use-package consult-eglot
     :bind (:map eglot-mode-map
                 ("C-M-." . consult-eglot-symbols))))
-
-;;(setq eldoc-echo-area-use-multiline-p nil)
-
 
 (provide 'init-eglot)
 

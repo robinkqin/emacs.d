@@ -1,25 +1,22 @@
 ;;; init-citre.el --- citre configurations.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; citre configurations.
-;;
 
 ;;; Code:
 
-;; Ctags IDE on the True Editor
-;; @see https://github.com/universal-ctags/citre#quick-start
 (use-package citre
+  :ensure t
   :diminish
-  :commands citre-jump-back
-  :functions xref-go-back
   :bind (:map prog-mode-map
               ("C-x c j" . citre-jump+)
-              ("C-x c k" . citre-jump-back+)
               ("C-x c p" . citre-peek)
-              ("C-x c a" . citre-ace-peek)
-              ("C-x c u" . citre-update-this-tags-file))
+              ("C-x c a" . citre-ace-peek))
   :init
   ;;(require 'citre-config)
+  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
+  (with-eval-after-load 'dired (require 'citre-lang-fileref))
+  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
+
   (setq citre-auto-enable-citre-mode-modes '(prog-mode)
         citre-default-create-tags-file-location 'global-cache
         citre-use-project-root-when-creating-tags t
@@ -29,42 +26,29 @@
     (setq citre-gtags-args '("--compact")))
 
   (defun citre-jump+ ()
-    "Jump to the definition of the symbol at point.
-Fallback to `xref-find-definitions'."
     (interactive)
     (condition-case _
         (citre-jump)
       (error (let* ((xref-prompt-for-identifier nil))
                (call-interactively #'xref-find-definitions)))))
 
-  (defun citre-jump-back+ ()
-    "Go back to the position before last `citre-jump'.
-Fallback to `xref-go-back'."
-    (interactive)
-    (condition-case _
-        (citre-jump-back)
-      (error (if (fboundp #'xref-go-back)
-                 (call-interactively #'xref-go-back)
-               (call-interactively #'xref-pop-marker-stack)))))
-
   (defun my--push-point-to-xref-marker-stack (&rest r)
+    (message "push mark")
     (xref-push-marker-stack (point-marker)))
   (dolist (func '(find-function
-                  consult-imenu
-                  consult-line
-                  consult-grep
-                  consult-git-grep
-                  consult-ripgrep
-                  consult-outline
-                  ;;consult-citre
-                  ;;citre-jump
-                  consult-eglot-symbols))
+                  consult-imenu consult-imenu-multi
+                  consult-line consult-grep consult-git-grep consult-ripgrep
+                  ;;consult-outline consult-eglot-symbols
+                  ;;beginning-of-buffer end-of-buffer jump-to-register mark-whole-buffer
+                  ;;beginend-prog-mode-goto-end beginend-prog-mode-goto-beginning
+                  ;;mwim-beginning-of-code-or-line mwim-end-of-code-or-line
+                  ;;next-buffer previous-buffer switch-to-buffer describe-function
+                  ;;describe-variable find-file-at-point xref-find-definitions
+                  ;;session-jump-to-last-change avy-goto-word-1 avy-goto-word-2
+                  embark-act keyboard-escape-quit
+                  embark-next-symbol embark-previous-symbol
+                  citre-jump))
     (advice-add func :before 'my--push-point-to-xref-marker-stack))
-
-  :config
-  (with-eval-after-load 'cc-mode (require 'citre-lang-c))
-  (with-eval-after-load 'dired (require 'citre-lang-fileref))
-  (with-eval-after-load 'verilog-mode (require 'citre-lang-verilog))
 
   (if my/eglot-enable
       (with-no-warnings
@@ -107,6 +91,7 @@ Fallback to `xref-go-back'."
     (with-no-warnings
       (message "citre without eglot")
       (add-to-list 'completion-at-point-functions#'citre-completion-at-point))))
+
 
 (require 'citre)
 (require 'consult)
@@ -229,7 +214,6 @@ any valid actions in readtags, e.g., \"-D\", to get pseudo tags."
           (display-action))))))
   (setf (alist-get 'consult-citre embark-exporters-alist)
         #'consult-citre--embark-export-xref))
-
 
 (provide 'init-citre)
 

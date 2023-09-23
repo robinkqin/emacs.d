@@ -1,62 +1,40 @@
 ;; init-dict.el --- Initialize dictionaries.	-*- lexical-binding: t -*-
+
 ;;; Commentary:
-;;
-;; Multiple dictionaries.
-;;
+
 ;;; Code:
 
 (use-package fanyi
+  :ensure t
   :custom
   (fanyi-providers '(fanyi-haici-provider
                      fanyi-youdao-thesaurus-provider
                      fanyi-etymon-provider
                      fanyi-longman-provider)))
 
-(when sys/linuxp
-  (require 'sdcv)
-  (setq sdcv-say-word-p t)
-  (setq sdcv-dictionary-data-dir "/usr/share/stardict/dic")
-  (setq sdcv-dictionary-simple-list
-        '("KDic11万英汉词典"
-          "懒虫简明英汉词典"
-          "懒虫简明汉英词典"))
-  (setq sdcv-dictionary-complete-list
-        '("牛津英汉双解美化版"
-          "英汉汉英专业词典"
-          "quick_eng-zh_CN"
-          "KDic11万英汉词典"
-          "朗道汉英字典5.0"
-          "朗道英汉字典5.0"
-          "懒虫简明英汉词典"
-          "懒虫简明汉英词典")))
-
-(when sys/win32p
-  ;; copy sdcv.exe libtermcap-0.dll libreadline8.dll from msys2 env to PATH
-  (require 'sdcv)
-  (setq sdcv-say-word-p t)
-  (setq sdcv-dictionary-data-dir "C:\\software\\stardict\\stardict")
-  (setq sdcv-dictionary-simple-list
-        '("kdic-ec-11w"))
-  (setq sdcv-dictionary-complete-list
-        '("kdic-ec-11w"
-          "oxford-gb-formated"  ;; modify *.ifo bookname=xxx
-          "quick_eng-zh_CN")))
+(require 'sdcv)
+(setq sdcv-say-word-p t)
+(if sys/win32p
+    (setq sdcv-dictionary-data-dir "C:\\software\\stardict\\stardict")
+  (setq sdcv-dictionary-data-dir "/usr/share/stardict/dic"))
+(setq sdcv-dictionary-simple-list
+      '("kdic-ec-11w"))
+(setq sdcv-dictionary-complete-list
+      '("kdic-ec-11w"
+        "oxford-gb-formated"  ;; *.ifo bookname=xxx
+        "quick_eng-zh_CN"))
 
 (when sys/macp
-  (use-package osx-dictionary))
+  (use-package osx-dictionary
+    :ensure t))
 
 ;;(use-package go-translate
-;;    :bind (("C-c d g" . gts-do-translate))
-;;    :init (setq gts-translate-list '(("en" "zh") ("zh" "en"))))
-
-;;(use-package youdao-dictionary
-;;  :commands (youdao-dictionary-search-at-point+)
-;;  :init
-;;  (global-set-key (kbd "C-c y") 'youdao-dictionary-search-at-point+))
+;;  :ensure t
+;;  :bind (("C-c d g" . gts-do-translate))
+;;  :init (setq gts-translate-list '(("en" "zh") ("zh" "en"))))
 
 ;;;; On-the-fly spell checker
 ;;(use-package flyspell
-;;  :ensure nil
 ;;  :diminish
 ;;  :if (executable-find "aspell")
 ;;  :hook (((text-mode outline-mode) . flyspell-mode)
@@ -69,7 +47,6 @@
 ;;              ispell-extra-args '("--sug-mode=ultra" "--lang=en_US" "--run-together")))
 
 ;;(use-package corfu-english-helper
-;;  :ensure nil
 ;;  :commands toggle-corfu-english-helper)
 
 
