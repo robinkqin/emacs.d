@@ -21,7 +21,7 @@
 ;;   browse-url-browser-function 'eww-browse-url))
 
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-(add-hook 'window-size-change-functions #'frame-hide-title-bar-when-maximized)
+;;(add-hook 'window-size-change-functions #'frame-hide-title-bar-when-maximized)
 
 (use-package time
   :init (setq display-time-24hr-format t

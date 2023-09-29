@@ -25,12 +25,13 @@
 ;;  (setq pyim-page-length 8)
 ;;  (setq pyim-scheme--enable-assistant-p t))
 
-(use-package rime
-  :ensure t
-  :init
-  (setq rime-user-data-dir "~/.config/ibus/rime/")
-  :custom
-  (default-input-method "rime"))
+(if (not sys/win32p)
+    (use-package rime
+      :ensure t
+      :init
+      (setq rime-user-data-dir "~/.config/ibus/rime/")
+      :custom
+      (default-input-method "rime")))
 
 (use-package beginend
   :ensure t
