@@ -33,7 +33,6 @@
                (call-interactively #'xref-find-definitions)))))
 
   (defun my--push-point-to-xref-marker-stack (&rest r)
-    (message "push mark")
     (xref-push-marker-stack (point-marker)))
   (dolist (func '(find-function
                   consult-imenu consult-imenu-multi

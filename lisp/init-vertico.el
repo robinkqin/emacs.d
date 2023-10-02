@@ -89,11 +89,11 @@
 (global-set-key (kbd "<f2>") 'vertico-repeat)
 (add-hook 'minibuffer-setup-hook #'vertico-repeat-save)
 
-(when (display-graphic-p)
-  (use-package vertico-posframe
-    ;;:config
-    ;;(vertico-posframe-mode 1)
-    :ensure t))
+;;(when (display-graphic-p)
+;;  (use-package vertico-posframe
+;;    ;;:config
+;;    ;;(vertico-posframe-mode 1)
+;;    :ensure t))
 
 (use-package marginalia
   :ensure t

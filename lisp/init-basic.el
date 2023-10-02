@@ -12,16 +12,14 @@
 (when (fboundp 'tool-bar-mode) (tool-bar-mode -1))
 (when (fboundp 'scroll-bar-mode) (scroll-bar-mode -1))
 
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
 (defalias 'list-buffers 'ibuffer)
 
-;;(when (not (display-graphic-p))
-;;  (setq
-;;   eww-search-prefix "https://www.bing.com"
-;;   ;;eww-search-prefix "https://www.google.com"
-;;   browse-url-browser-function 'eww-browse-url))
-
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-;;(add-hook 'window-size-change-functions #'frame-hide-title-bar-when-maximized)
+;;(setq
+;; eww-search-prefix "https://www.bing.com"
+;; ;;eww-search-prefix "https://www.google.com"
+;; browse-url-browser-function 'eww-browse-url)
 
 (use-package time
   :init (setq display-time-24hr-format t
@@ -54,10 +52,14 @@
 
   (setq-default save-interprogram-paste-before-kill t
                 auto-window-vscroll nil
-                inhibit-startup-screen t  ; disable the startup screen splash
+                use-file-dialog nil
+                use-dialog-box nil
+                inhibit-startup-screen t
+                inhibit-default-init t
+                initial-scratch-message nil
                 isearch-allow-motion t
                 isearch-lazy-count t
-                make-backup-files nil   ; disable backup file
+                make-backup-files nil
                 use-short-answers t)
 
   (setq-default indent-tabs-mode nil
