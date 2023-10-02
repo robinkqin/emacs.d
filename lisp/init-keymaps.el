@@ -6,9 +6,9 @@
 
 ;;(define-key key-translation-map (kbd "M-p") (kbd "C-p"))
 ;;(define-key key-translation-map (kbd "M-n") (kbd "C-n"))
-;;(define-key key-translation-map (kbd "M-q") (kbd "C-v"))
-;;(define-key key-translation-map (kbd "M-c") (kbd "C-g"))
-;;(define-key key-translation-map (kbd "M-<SPC>") (kbd "M-x"))
+(define-key key-translation-map (kbd "M-q") (kbd "C-v"))
+(define-key key-translation-map (kbd "M-c") (kbd "C-g"))
+(define-key key-translation-map (kbd "M-<SPC>") (kbd "M-x"))
 
 (global-set-key (kbd "M-s M-s") 'consult-git-grep)
 (global-set-key (kbd "M-s s") 'consult-grep)

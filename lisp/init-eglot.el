@@ -10,7 +10,8 @@
 (message "init flymake done")
 
 (use-package eglot
-  :hook (prog-mode . eglot-ensure))
+  :hook ((c-mode . eglot-ensure)
+         (c++-mode . eglot-ensure)))
 
 (use-package consult-eglot
   :ensure t

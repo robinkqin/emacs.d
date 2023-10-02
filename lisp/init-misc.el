@@ -8,30 +8,30 @@
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
 
-;;(use-package pyim-wbdict
-;;  :ensure t)
-;;(use-package pyim-basedict
-;;  :ensure t)
-;;(use-package pyim
-;;  :after pyim-wbdict pyim-basedict
+(use-package pyim
+  :ensure t
+  :init
+  (use-package pyim-wbdict
+    :ensure t
+    :config
+    (pyim-wbdict-v86-enable))
+  (use-package pyim-basedict
+    :ensure t
+    :config
+    (pyim-basedict-enable))
+  (setq pyim-default-scheme 'wubi)
+  (setq default-input-method "pyim")
+  (setq pyim-page-length 9))
+
+;;(use-package rime
 ;;  :ensure t
 ;;  :init
-;;  (setq default-input-method "pyim")
-;;  :config
-;;  (pyim-wbdict-v86-enable)
-;;  (setq pyim-default-scheme 'wubi)
-;;  ;;(pyim-basedict-enable)
-;;  ;;(setq pyim-default-scheme 'quanpin)
-;;  (setq pyim-page-length 8)
-;;  (setq pyim-scheme--enable-assistant-p t))
-
-(if (not sys/win32p)
-    (use-package rime
-      :ensure t
-      :init
-      (setq rime-user-data-dir "~/.config/ibus/rime/")
-      :custom
-      (default-input-method "rime")))
+;;  (setq default-input-method "rime")
+;;  (setq rime-user-data-dir "~/.config/ibus/rime/"))
+;;
+;;(if sys/win32p
+;;    (setq default-input-method "pyim")
+;;  (setq default-input-method "rime"))
 
 (use-package beginend
   :ensure t
@@ -63,6 +63,11 @@
   :ensure t
   :bind (("M-z" . avy-zap-to-char-dwim)
          ("M-Z" . avy-zap-up-to-char-dwim)))
+
+(use-package ace-pinyin
+  :diminish
+  :ensure t
+  :hook (after-init . ace-pinyin-global-mode))
 
 (use-package wgrep
   :ensure t
@@ -119,20 +124,27 @@
   :init
   (setq eldoc-echo-area-use-multiline-p nil))
 
-(when (and module-file-suffix           ; dynamic module
-           (executable-find "cmake")
-           (executable-find "libtool")  ; libtool-bin
-           (executable-find "make"))
-  (use-package vterm
-    :ensure t
-    :init (setq vterm-always-compile-module t)))
+;;(when (and module-file-suffix           ; dynamic module
+;;           (executable-find "cmake")
+;;           (executable-find "libtool")  ; libtool-bin
+;;           (executable-find "make"))
+;;  (use-package vterm
+;;    :ensure t
+;;    :init (setq vterm-always-compile-module t)))
 
-;;(use-package doom-themes
-;;  :ensure t)
-;;(load-theme 'doom-one t)
+(use-package doom-modeline
+  :ensure t
+  :init
+  (setq doom-modeline-icon nil)
+  :hook (after-init . doom-modeline-mode))
+(use-package doom-themes
+  :ensure t)
 (use-package gruvbox-theme
   :ensure t)
-(load-theme 'gruvbox t)
+
+(if (display-graphic-p)
+    (load-theme 'doom-one t)
+  (load-theme 'gruvbox t))
 
 (use-package keyfreq
   :ensure t
