@@ -50,9 +50,6 @@
 (require 'init-matchit)
 (message "init matchit done")
 
-(require 'init-yasnippet)
-(message "init yasnippet done")
-
 (require 'init-program)
 (message "init program done")
 
@@ -61,6 +58,8 @@
   (message "init eglot done"))
 
 (when my/lsp-bridge-enable
+  (require 'init-yasnippet)
+  (message "init yasnippet done")
   (require 'init-lsp-bridge)
   (message "init lsp-bridge done"))
 

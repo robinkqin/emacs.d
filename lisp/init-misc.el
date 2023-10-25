@@ -143,7 +143,7 @@
   :ensure t)
 
 (if (display-graphic-p)
-    (load-theme 'doom-one t)
+    (load-theme 'gruvbox t)
   (load-theme 'gruvbox t))
 
 (use-package keyfreq
