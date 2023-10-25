@@ -53,8 +53,9 @@
 (global-set-key (kbd "M-m") 'symbol-overlay-put)
 (global-set-key (kbd "M-u") 'symbol-overlay-remove-all)
 
-(global-set-key (kbd "M-\\") 'my/xref-find-references-at-point)
-(global-set-key (kbd "M-s \\") 'my/xref-find-references-from-yank)
+(global-set-key (kbd "M-\\") 'ace-window)
+;;(global-set-key (kbd "M-\\") 'my/xref-find-references-at-point)
+;;(global-set-key (kbd "M-s \\") 'my/xref-find-references-from-yank)
 
 (when (package-installed-p 'citre)
   (global-set-key (kbd "M-.") 'citre-jump+)
