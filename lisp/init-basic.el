@@ -34,7 +34,7 @@
 
 (use-package files
   :init
-  (setq auto-save-visited-interval 3
+  (setq auto-save-visited-interval 2
         save-silently t
         confirm-nonexistent-file-or-buffer nil
         large-file-warning-threshold (* 32 1024 1024)
