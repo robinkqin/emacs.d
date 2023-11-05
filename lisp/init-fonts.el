@@ -31,9 +31,9 @@
              when (font-installed-p font)
              return (set-face-attribute 'default nil
                                         :family font
-                                        :height (cond (sys/macp 175)
+                                        :height (cond (sys/macp 200)
                                                       (sys/win32p 135)
-                                                      (t 125))))
+                                                      (t 150))))
 
     ;; Specify font for all unicode characters
     (cl-loop for font in '("Segoe UI Symbol" "Symbola" "Symbol")

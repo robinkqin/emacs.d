@@ -67,7 +67,17 @@
 (use-package ace-pinyin
   :diminish
   :ensure t
-  :hook (after-init . ace-pinyin-global-mode))
+  :hook (after-init . ace-pinyin-global-mode)
+  :config
+  (defun my/avy-goto-char-timer (&optional arg)
+    (interactive "P")
+    (let ((avy-all-windows (if arg
+                               (not avy-all-windows)
+                             avy-all-windows)))
+      (avy-with avy-goto-char-timer
+        (setq avy--old-cands (avy--read-candidates
+                              'pinyinlib-build-regexp-string))
+        (avy-process avy--old-cands)))))
 
 (use-package wgrep
   :ensure t
@@ -80,6 +90,10 @@
     :ensure t))
 (require 'color-rg)
 (setq color-rg-search-no-ignore-file nil)
+
+(require 'thing-edit)
+(require 'avy-thing-edit)
+(require 'markmacro)
 
 (use-package rg
   :ensure t

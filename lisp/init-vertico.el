@@ -279,7 +279,7 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 
-(global-unset-key (kbd "M-i"))
+;;(global-unset-key (kbd "M-i"))
 (use-package corfu
   :ensure t
   :custom
@@ -322,7 +322,7 @@
   :custom-face
   (corfu-border ((t (:inherit region :background unspecified))))
   ;;:bind ("M-/" . completion-at-point)
-  :bind ("M-i M-i" . completion-at-point)
+  ;;:bind ("M-i M-i" . completion-at-point)
   :hook ((after-init . global-corfu-mode)
          (global-corfu-mode . corfu-popupinfo-mode)))
 
@@ -335,24 +335,24 @@
   :ensure t
   ;; Bind dedicated completion commands
   ;; Alternative prefix keys: C-c p, M-p, M-+, ...
-  :bind (;;("M-i M-i" . completion-at-point) ;; capf
-         ("M-i i" . completion-at-point) ;; capf
-         ("M-i p" . completion-at-point) ;; capf
-         ("M-i t" . complete-tag)        ;; etags
-         ("M-i d" . cape-dabbrev)        ;; or dabbrev-completion
-         ("M-i h" . cape-history)
-         ("M-i f" . cape-file)
-         ("M-i k" . cape-keyword)
-         ("M-i s" . cape-elisp-symbol)
-         ("M-i e" . cape-elisp-block)
-         ("M-i a" . cape-abbrev)
-         ("M-i l" . cape-line)
-         ("M-i w" . cape-dict)
-         ("M-i \\" . cape-tex)
-         ("M-i _" . cape-tex)
-         ("M-i ^" . cape-tex)
-         ("M-i &" . cape-sgml)
-         ("M-i r" . cape-rfc1345))
+  ;;:bind (;;("M-i M-i" . completion-at-point) ;; capf
+  ;;       ("M-i i" . completion-at-point) ;; capf
+  ;;       ("M-i p" . completion-at-point) ;; capf
+  ;;       ("M-i t" . complete-tag)        ;; etags
+  ;;       ("M-i d" . cape-dabbrev)        ;; or dabbrev-completion
+  ;;       ("M-i h" . cape-history)
+  ;;       ("M-i f" . cape-file)
+  ;;       ("M-i k" . cape-keyword)
+  ;;       ("M-i s" . cape-elisp-symbol)
+  ;;       ("M-i e" . cape-elisp-block)
+  ;;       ("M-i a" . cape-abbrev)
+  ;;       ("M-i l" . cape-line)
+  ;;       ("M-i w" . cape-dict)
+  ;;       ("M-i \\" . cape-tex)
+  ;;       ("M-i _" . cape-tex)
+  ;;       ("M-i ^" . cape-tex)
+  ;;       ("M-i &" . cape-sgml)
+  ;;       ("M-i r" . cape-rfc1345))
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.  The order of the functions matters, the
