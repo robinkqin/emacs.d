@@ -124,11 +124,11 @@
         show-paren-when-point-inside-paren t)
   :hook (after-init . show-paren-mode))
 
-(use-package elec-pair
-  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-  :hook ((after-init . electric-pair-mode)
-         (after-init . electric-indent-mode)
-         (after-init . minibuffer-electric-default-mode)))
+;;(use-package elec-pair
+;;  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+;;  :hook ((after-init . electric-pair-mode)
+;;         (after-init . electric-indent-mode)
+;;         (after-init . minibuffer-electric-default-mode)))
 
 (use-package delsel
   :hook (after-init . delete-selection-mode))
