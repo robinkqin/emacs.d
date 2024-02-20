@@ -12,12 +12,10 @@
 (use-package eglot
   :hook (prog-mode . eglot-ensure))
 
-(use-package eglot
-  :hook (prog-mode . eglot-ensure)
-  :config
-  (use-package consult-eglot
-    :bind (:map eglot-mode-map
-                ("C-M-." . consult-eglot-symbols))))
+(use-package consult-eglot
+  :ensure t
+  :bind (:map eglot-mode-map
+              ("C-M-." . consult-eglot-symbols)))
 
 (provide 'init-eglot)
 

@@ -91,9 +91,9 @@
 
 (when (display-graphic-p)
   (use-package vertico-posframe
-    :ensure t
-    :config
-    (vertico-posframe-mode 1)))
+    ;;:config
+    ;;(vertico-posframe-mode 1)
+    :ensure t))
 
 (use-package marginalia
   :ensure t
