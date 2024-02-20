@@ -4,6 +4,17 @@
 
 ;;; Code:
 
+(when emacs/>=29p
+  (use-package dape
+    :ensure t
+    :bind (("<f5>" . dape))
+    :custom (dape-buffer-window-arrangment 'right)
+    :config
+    ;; Save buffers on startup, useful for interpreted languages
+    (add-hook 'dape-on-start-hooks
+              (defun dape--save-on-start ()
+                (save-some-buffers t t)))))
+
 (global-set-key [f5] 'gud-cont)
 (global-set-key [f6] 'gud-finish)
 (global-set-key [f7] 'gud-step)

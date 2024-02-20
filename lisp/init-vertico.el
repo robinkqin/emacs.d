@@ -7,7 +7,7 @@
 (use-package emacs
   :init
   ;; TAB cycle if there are only few candidates
-  (setq completion-cycle-threshold 4)
+  (setq completion-cycle-threshold 3)
 
   ;;;; Add prompt indicator to `completing-read-multiple'.
   ;;;; We display [CRM<separator>], e.g., [CRM,] if the separator is a comma.
@@ -53,6 +53,7 @@
   ;;       orderless-component-separator #'orderless-escapable-split-on-space)
   (setq completion-styles '(orderless basic)
         ;;completion-category-defaults nil
+        ;;(orderless-component-separator #'orderless-escapable-split-on-space)
         completion-category-overrides '((file (styles basic partial-completion))))
   :config
   ;; make completion support pinyin, refer to
@@ -200,8 +201,9 @@
   (advice-add #'register-preview :override #'consult-register-window)
 
   ;; Use Consult to select xref locations with preview
-  (setq xref-show-xrefs-function #'consult-xref
-        xref-show-definitions-function #'consult-xref)
+  (with-eval-after-load 'xref
+    (setq xref-show-xrefs-function #'consult-xref
+          xref-show-definitions-function #'consult-xref))
 
   ;; Configure other variables and modes in the :config section,
   ;; after lazily loading the package.
@@ -288,8 +290,8 @@
   (corfu-auto-prefix 2)
   (corfu-auto-delay 0.1)
   (corfu-popupinfo-delay '(0.2 . 0.1))
-  ;;(corfu-separator ?\s)          ;; Orderless field separator
-  (corfu-quit-at-boundary nil)   ;; Never quit at completion boundary
+  ;;;;(corfu-separator ?\s)          ;; Orderless field separator
+  ;;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary !!! rm for eglot company
   (corfu-quit-no-match t)      ;; nil: Never quit, even if there is no match
   (corfu-preview-current nil)
   ;;;;(corfu-preselect-first nil)    ;; Disable candidate preselection
@@ -321,8 +323,7 @@
 
   :custom-face
   (corfu-border ((t (:inherit region :background unspecified))))
-  ;;:bind ("M-/" . completion-at-point)
-  ;;:bind ("M-i M-i" . completion-at-point)
+  :bind ("M-/" . completion-at-point)
   :hook ((after-init . global-corfu-mode)
          (global-corfu-mode . corfu-popupinfo-mode)))
 
@@ -361,7 +362,7 @@
   (add-to-list 'completion-at-point-functions #'cape-dabbrev)
   (add-to-list 'completion-at-point-functions #'cape-file)
   (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  (add-to-list 'completion-at-point-functions #'cape-history)
+  ;;(add-to-list 'completion-at-point-functions #'cape-history)
   (add-to-list 'completion-at-point-functions #'cape-keyword)
   ;;(add-to-list 'completion-at-point-functions #'cape-tex)
   ;;(add-to-list 'completion-at-point-functions #'cape-sgml)

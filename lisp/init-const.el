@@ -24,6 +24,12 @@
   (< emacs-major-version 29)
   "Emacs is lower then 29.")
 
+(defun my/treesit-available-p ()
+  "Check whether tree-sitter is available.
+Native tree-sitter is introduced since 29.1."
+  (and (fboundp 'treesit-available-p)
+       (treesit-available-p)))
+
 (provide 'init-const)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

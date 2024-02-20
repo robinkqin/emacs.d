@@ -16,6 +16,13 @@
 
 (defalias 'list-buffers 'ibuffer)
 
+(require 'subr-x)
+
+;; Compatibility
+(use-package compat
+  :ensure t
+  :demand t)
+
 ;;(setq
 ;; eww-search-prefix "https://www.bing.com"
 ;; ;;eww-search-prefix "https://www.google.com"
@@ -27,10 +34,9 @@
   :hook (after-init . display-time-mode))
 
 ;;(use-package display-line-numbers
-;;  :init
-;;  (setq-default display-line-numbers-width 3)
-;;  (setq display-line-numbers-width-start t)
-;;  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode))
+;;  :ensure nil
+;;  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode)
+;;  :init (setq display-line-numbers-width-start t))
 
 (use-package files
   :init
@@ -173,18 +179,53 @@
         ediff-split-window-function 'split-window-horizontally
         ediff-merge-split-window-function 'split-window-horizontally))
 
+;; Search tool
+(use-package grep
+  :ensure nil
+  :autoload grep-apply-setting
+  :init
+  (when (executable-find "rg")
+    (grep-apply-setting
+     'grep-command "rg --color=auto --null -nH --no-heading -e ")
+    (grep-apply-setting
+     'grep-template "rg --color=auto --null --no-heading -g '!*/' -e <R> <D>")
+    (grep-apply-setting
+     'grep-find-command '("rg --color=auto --null -nH --no-heading -e ''" . 38))
+    (grep-apply-setting
+     'grep-find-template "rg --color=auto --null -nH --no-heading -e <R> <D>")))
+
 (use-package xref
   :init
+  (when (executable-find "rg")
+    (setq xref-search-program 'ripgrep))
   (setq xref-search-program 'ripgrep
         xref-auto-jump-to-first-definition 'show
         xref-auto-jump-to-first-xref 'show))
 
+;;;; Narrow/Widen
+;;(use-package fancy-narrow
+;;  :ensure t
+;;  :diminish
+;;  :hook (after-init . fancy-narrow-mode))
+
 (use-package so-long
   :hook (after-init . global-so-long-mode))
 
+;;;; Highlight the current line
+;;(use-package hl-line
+;;  :ensure nil
+;;  :hook ((after-init . global-hl-line-mode)
+;;         ((dashboard-mode eshell-mode shell-mode term-mode vterm-mode) .
+;;          (lambda () (setq-local global-hl-line-mode nil)))))
+
 (put 'narrow-to-region 'disabled nil)
-(defun narrow-to-region-pop-mark (_ _) (pop-mark))
-(advice-add #'narrow-to-region :after #'narrow-to-region-pop-mark)
+;;(defun narrow-to-region-pop-mark (_ _) (pop-mark))
+;;(advice-add #'narrow-to-region :after #'narrow-to-region-pop-mark)
+
+;; Sqlite
+(when (fboundp 'sqlite-open)
+  (use-package emacsql-sqlite-builtin
+    :ensure t))
 
 (provide 'init-basic)
 

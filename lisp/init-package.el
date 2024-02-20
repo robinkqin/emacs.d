@@ -18,23 +18,33 @@
                          ("nongnu" . "https://mirrors.ustc.edu.cn/elpa/nongnu/")
                          ("melpa" . "https://mirrors.ustc.edu.cn/elpa/melpa/")))
 
-(unless (bound-and-true-p package--initialized)
+;; Initialize packages
+(unless (bound-and-true-p package--initialized) ; To avoid warnings in 27
+  (setq package-enable-at-startup nil)          ; To prevent initializing twice
   (package-initialize))
+
+;; More options
+(setq package-install-upgrade-built-in t)
 
 (unless (fboundp 'use-package)
   (package-refresh-contents)
   (package-install 'use-package))
 
+;; Should set before loading `use-package'
 (setq use-package-enable-imenu-support t
       use-package-expand-minimally t
+      ;;use-package-always-defer t
+      ;;use-package-always-ensure t
       use-package-verbose t)
 
-(require 'use-package)
+;;(require 'use-package)
 
-(use-package gnu-elpa-keyring-update
+;; Required by `use-package'
+(use-package diminish
   :ensure t)
 
-(use-package diminish
+;; Update GPG keyring for GNU ELPA
+(use-package gnu-elpa-keyring-update
   :ensure t)
 
 (provide 'init-package)
