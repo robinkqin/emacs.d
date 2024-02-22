@@ -28,7 +28,8 @@
   "Check whether tree-sitter is available.
 Native tree-sitter is introduced since 29.1."
   (and (fboundp 'treesit-available-p)
-       (treesit-available-p)))
+       (treesit-available-p)
+       (not sys/win32p)))
 
 (provide 'init-const)
 

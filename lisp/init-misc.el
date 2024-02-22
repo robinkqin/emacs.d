@@ -73,7 +73,10 @@
   (setq wgrep-auto-save-buffer t
         wgrep-change-readonly-file t))
 
-(when (or sys/macp sys/win32p)
+;;(when (or sys/macp sys/win32p)
+;;  (use-package exec-path-from-shell
+;;    :ensure t))
+(when (or sys/macp sys/linuxp (daemonp))
   (use-package exec-path-from-shell
     :ensure t
     :custom (exec-path-from-shell-arguments '("-l"))

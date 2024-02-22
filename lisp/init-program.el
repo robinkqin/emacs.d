@@ -9,7 +9,9 @@
   (use-package treesit-auto
     :ensure t
     :hook (after-init . global-treesit-auto-mode)
-    :init (setq treesit-auto-install 'prompt)))
+    :init (setq treesit-auto-install 'prompt))
+  (use-package c-ts-mode
+    :init (setq c-ts-mode-indent-offset 4)))
 
 (use-package cc-mode
   :ensure nil
@@ -30,10 +32,6 @@
   (setq indent-tabs-mode nil))
 (add-hook 'c-mode-hook #'my/c-hook)
 (add-hook 'c++-mode-hook #'my/c-hook)
-
-(when (my/treesit-available-p)
-  (use-package c-ts-mode
-    :init (setq c-ts-mode-indent-offset 4)))
 
 ;; Python Mode
 ;; Install: pip install pyflakes autopep8

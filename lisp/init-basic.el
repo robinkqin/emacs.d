@@ -198,8 +198,7 @@
   :init
   (when (executable-find "rg")
     (setq xref-search-program 'ripgrep))
-  (setq xref-search-program 'ripgrep
-        xref-auto-jump-to-first-definition 'show
+  (setq xref-auto-jump-to-first-definition 'show
         xref-auto-jump-to-first-xref 'show))
 
 ;;;; Narrow/Widen
