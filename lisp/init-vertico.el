@@ -281,98 +281,99 @@
   :hook (embark-collect-mode . consult-preview-at-point-mode))
 
 
-;;(global-unset-key (kbd "M-i"))
-(use-package corfu
-  :ensure t
-  :custom
-  (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
-  (corfu-auto t)                 ;; Enable auto completion
-  (corfu-auto-prefix 2)
-  (corfu-auto-delay 0.1)
-  (corfu-popupinfo-delay '(0.2 . 0.1))
+(when (my/eglot-available-p)
+  ;;(global-unset-key (kbd "M-i"))
+  (use-package corfu
+    :ensure t
+    :custom
+    (corfu-cycle t)                ;; Enable cycling for `corfu-next/previous'
+    (corfu-auto t)                 ;; Enable auto completion
+    (corfu-auto-prefix 2)
+    (corfu-auto-delay 0.1)
+    (corfu-popupinfo-delay '(0.2 . 0.1))
   ;;;;(corfu-separator ?\s)          ;; Orderless field separator
-  ;;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary !!! rm for eglot company
-  (corfu-quit-no-match t)      ;; nil: Never quit, even if there is no match
-  (corfu-preview-current nil)
+    ;;(corfu-quit-at-boundary nil)   ;; Never quit at completion boundary !!! rm for eglot company
+    (corfu-quit-no-match t)      ;; nil: Never quit, even if there is no match
+    (corfu-preview-current nil)
   ;;;;(corfu-preselect-first nil)    ;; Disable candidate preselection
-  ;;(corfu-preselect 'prompt)      ;; Preselect the prompt
-  (corfu-on-exact-match nil)     ;; Configure handling of exact matches
-  (corfu-echo-documentation nil) ;; Disable documentation in the echo area
-  ;;(corfu-scroll-margin 5)        ;; Use scroll margin
+    ;;(corfu-preselect 'prompt)      ;; Preselect the prompt
+    (corfu-on-exact-match nil)     ;; Configure handling of exact matches
+    (corfu-echo-documentation nil) ;; Disable documentation in the echo area
+    ;;(corfu-scroll-margin 5)        ;; Use scroll margin
 
   ;;;; Use TAB for cycling, default is `corfu-complete'.
-  ;;:bind
-  ;;(:map corfu-map
-  ;;      ("TAB" . corfu-next)
-  ;;      ([tab] . corfu-next)
-  ;;      ("S-TAB" . corfu-previous)
-  ;;      ([backtab] . corfu-previous))
+    ;;:bind
+    ;;(:map corfu-map
+    ;;      ("TAB" . corfu-next)
+    ;;      ([tab] . corfu-next)
+    ;;      ("S-TAB" . corfu-previous)
+    ;;      ([backtab] . corfu-previous))
 
   ;;;; Enable Corfu only for certain modes.
-  ;;:hook ((prog-mode . corfu-mode)
-  ;;       (c-mode . corfu-mode)
-  ;;       (c++-mode . corfu-mode)
-  ;;       (shell-mode . corfu-mode)
-  ;;       (eshell-mode . corfu-mode))
+    ;;:hook ((prog-mode . corfu-mode)
+    ;;       (c-mode . corfu-mode)
+    ;;       (c++-mode . corfu-mode)
+    ;;       (shell-mode . corfu-mode)
+    ;;       (eshell-mode . corfu-mode))
 
   ;;;; Recommended: Enable Corfu globally.
   ;;;; This is recommended since Dabbrev can be used globally (M-/).
   ;;;; See also `corfu-excluded-modes'.
-  ;;:init
-  ;;(global-corfu-mode)
+    ;;:init
+    ;;(global-corfu-mode)
 
-  :custom-face
-  (corfu-border ((t (:inherit region :background unspecified))))
-  :bind ("M-/" . completion-at-point)
-  :hook ((after-init . global-corfu-mode)
-         (global-corfu-mode . corfu-popupinfo-mode)))
+    :custom-face
+    (corfu-border ((t (:inherit region :background unspecified))))
+    :bind ("M-/" . completion-at-point)
+    :hook ((after-init . global-corfu-mode)
+           (global-corfu-mode . corfu-popupinfo-mode)))
 
-(unless (display-graphic-p)
-  (use-package corfu-terminal
+  (unless (display-graphic-p)
+    (use-package corfu-terminal
+      :ensure t
+      :hook (global-corfu-mode . corfu-terminal-mode)))
+
+  (use-package cape
     :ensure t
-    :hook (global-corfu-mode . corfu-terminal-mode)))
+    ;; Bind dedicated completion commands
+    ;; Alternative prefix keys: C-c p, M-p, M-+, ...
+    ;;:bind (;;("M-i M-i" . completion-at-point) ;; capf
+    ;;       ("M-i i" . completion-at-point) ;; capf
+    ;;       ("M-i p" . completion-at-point) ;; capf
+    ;;       ("M-i t" . complete-tag)        ;; etags
+    ;;       ("M-i d" . cape-dabbrev)        ;; or dabbrev-completion
+    ;;       ("M-i h" . cape-history)
+    ;;       ("M-i f" . cape-file)
+    ;;       ("M-i k" . cape-keyword)
+    ;;       ("M-i s" . cape-elisp-symbol)
+    ;;       ("M-i e" . cape-elisp-block)
+    ;;       ("M-i a" . cape-abbrev)
+    ;;       ("M-i l" . cape-line)
+    ;;       ("M-i w" . cape-dict)
+    ;;       ("M-i \\" . cape-tex)
+    ;;       ("M-i _" . cape-tex)
+    ;;       ("M-i ^" . cape-tex)
+    ;;       ("M-i &" . cape-sgml)
+    ;;       ("M-i r" . cape-rfc1345))
+    :init
+    ;; Add to the global default value of `completion-at-point-functions' which is
+    ;; used by `completion-at-point'.  The order of the functions matters, the
+    ;; first function returning a result wins.  Note that the list of buffer-local
+    ;; completion functions takes precedence over the global list.
+    (add-to-list 'completion-at-point-functions #'cape-dabbrev)
+    (add-to-list 'completion-at-point-functions #'cape-file)
+    (add-to-list 'completion-at-point-functions #'cape-elisp-block)
+    ;;(add-to-list 'completion-at-point-functions #'cape-history)
+    (add-to-list 'completion-at-point-functions #'cape-keyword)
+    ;;(add-to-list 'completion-at-point-functions #'cape-tex)
+    ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
+    ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
+    (add-to-list 'completion-at-point-functions #'cape-abbrev)
+    ;;(add-to-list 'completion-at-point-functions #'cape-dict)
+    ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
+    ;;(add-to-list 'completion-at-point-functions #'cape-line)
 
-(use-package cape
-  :ensure t
-  ;; Bind dedicated completion commands
-  ;; Alternative prefix keys: C-c p, M-p, M-+, ...
-  ;;:bind (;;("M-i M-i" . completion-at-point) ;; capf
-  ;;       ("M-i i" . completion-at-point) ;; capf
-  ;;       ("M-i p" . completion-at-point) ;; capf
-  ;;       ("M-i t" . complete-tag)        ;; etags
-  ;;       ("M-i d" . cape-dabbrev)        ;; or dabbrev-completion
-  ;;       ("M-i h" . cape-history)
-  ;;       ("M-i f" . cape-file)
-  ;;       ("M-i k" . cape-keyword)
-  ;;       ("M-i s" . cape-elisp-symbol)
-  ;;       ("M-i e" . cape-elisp-block)
-  ;;       ("M-i a" . cape-abbrev)
-  ;;       ("M-i l" . cape-line)
-  ;;       ("M-i w" . cape-dict)
-  ;;       ("M-i \\" . cape-tex)
-  ;;       ("M-i _" . cape-tex)
-  ;;       ("M-i ^" . cape-tex)
-  ;;       ("M-i &" . cape-sgml)
-  ;;       ("M-i r" . cape-rfc1345))
-  :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.  The order of the functions matters, the
-  ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
-  (add-to-list 'completion-at-point-functions #'cape-dabbrev)
-  (add-to-list 'completion-at-point-functions #'cape-file)
-  (add-to-list 'completion-at-point-functions #'cape-elisp-block)
-  ;;(add-to-list 'completion-at-point-functions #'cape-history)
-  (add-to-list 'completion-at-point-functions #'cape-keyword)
-  ;;(add-to-list 'completion-at-point-functions #'cape-tex)
-  ;;(add-to-list 'completion-at-point-functions #'cape-sgml)
-  ;;(add-to-list 'completion-at-point-functions #'cape-rfc1345)
-  (add-to-list 'completion-at-point-functions #'cape-abbrev)
-  ;;(add-to-list 'completion-at-point-functions #'cape-dict)
-  ;;(add-to-list 'completion-at-point-functions #'cape-elisp-symbol)
-  ;;(add-to-list 'completion-at-point-functions #'cape-line)
-
-  (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster))
+    (advice-add 'eglot-completion-at-point :around #'cape-wrap-buster)))
 
 (provide 'init-vertico)
 

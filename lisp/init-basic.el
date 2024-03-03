@@ -18,11 +18,6 @@
 
 (require 'subr-x)
 
-;; Compatibility
-(use-package compat
-  :ensure t
-  :demand t)
-
 ;;(setq
 ;; eww-search-prefix "https://www.bing.com"
 ;; ;;eww-search-prefix "https://www.google.com"
@@ -33,10 +28,9 @@
               display-time-default-load-average nil)
   :hook (after-init . display-time-mode))
 
-;;(use-package display-line-numbers
-;;  :ensure nil
-;;  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode)
-;;  :init (setq display-line-numbers-width-start t))
+(use-package display-line-numbers
+  :hook ((prog-mode yaml-mode conf-mode) . display-line-numbers-mode)
+  :init (setq display-line-numbers-width-start t))
 
 (use-package files
   :init
@@ -130,11 +124,11 @@
         show-paren-when-point-inside-paren t)
   :hook (after-init . show-paren-mode))
 
-;;(use-package elec-pair
-;;  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
-;;  :hook ((after-init . electric-pair-mode)
-;;         (after-init . electric-indent-mode)
-;;         (after-init . minibuffer-electric-default-mode)))
+(use-package elec-pair
+  :init (setq electric-pair-inhibit-predicate 'electric-pair-conservative-inhibit)
+  :hook ((after-init . electric-pair-mode)
+         (after-init . electric-indent-mode)
+         (after-init . minibuffer-electric-default-mode)))
 
 (use-package delsel
   :hook (after-init . delete-selection-mode))
@@ -181,7 +175,6 @@
 
 ;; Search tool
 (use-package grep
-  :ensure nil
   :autoload grep-apply-setting
   :init
   (when (executable-find "rg")
@@ -201,30 +194,18 @@
   (setq xref-auto-jump-to-first-definition 'show
         xref-auto-jump-to-first-xref 'show))
 
-;;;; Narrow/Widen
-;;(use-package fancy-narrow
-;;  :ensure t
-;;  :diminish
-;;  :hook (after-init . fancy-narrow-mode))
-
 (use-package so-long
   :hook (after-init . global-so-long-mode))
 
 ;;;; Highlight the current line
 ;;(use-package hl-line
-;;  :ensure nil
 ;;  :hook ((after-init . global-hl-line-mode)
 ;;         ((dashboard-mode eshell-mode shell-mode term-mode vterm-mode) .
 ;;          (lambda () (setq-local global-hl-line-mode nil)))))
 
 (put 'narrow-to-region 'disabled nil)
-;;(defun narrow-to-region-pop-mark (_ _) (pop-mark))
-;;(advice-add #'narrow-to-region :after #'narrow-to-region-pop-mark)
-
-;; Sqlite
-(when (fboundp 'sqlite-open)
-  (use-package emacsql-sqlite-builtin
-    :ensure t))
+;;;;(defun narrow-to-region-pop-mark (_ _) (pop-mark))
+;;;;(advice-add #'narrow-to-region :after #'narrow-to-region-pop-mark)
 
 (provide 'init-basic)
 

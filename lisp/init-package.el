@@ -37,7 +37,7 @@
       ;;use-package-always-ensure t
       use-package-verbose t)
 
-;;(require 'use-package)
+(require 'use-package)
 
 ;; Required by `use-package'
 (use-package diminish

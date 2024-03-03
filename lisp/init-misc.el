@@ -4,6 +4,11 @@
 
 ;;; Code:
 
+;; Compatibility
+(use-package compat
+  :ensure t
+  :demand t)
+
 (use-package rainbow-delimiters
   :ensure t
   :hook (prog-mode . rainbow-delimiters-mode))
@@ -98,6 +103,12 @@
   :ensure t
   :bind (([remap kill-ring-save] . easy-kill)
          ([remap mark-sexp] . easy-mark)))
+
+;;;; Narrow/Widen
+;;(use-package fancy-narrow
+;;  :ensure t
+;;  :diminish
+;;  :hook (after-init . fancy-narrow-mode))
 
 ;;;; Increase selected region by semantic units
 ;;(use-package expand-region
@@ -196,10 +207,7 @@
   :ensure t)
 (use-package gruvbox-theme
   :ensure t)
-
-(if (display-graphic-p)
-    (load-theme 'gruvbox t)
-  (load-theme 'gruvbox t))
+(load-theme 'gruvbox t)
 
 ;; Enforce rules for popups
 (use-package popper

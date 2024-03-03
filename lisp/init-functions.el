@@ -192,6 +192,24 @@ Same as '`replace-string' `C-q' `C-m' `RET' `RET''."
     (add-hook 'pre-command-hook 'my/fly-back-to-present nil t)))
 (add-hook 'minibuffer-setup-hook #'my/fly-time-travel)
 
+
+(defun my--push-point-to-xref-marker-stack (&rest r)
+  (xref-push-marker-stack (point-marker)))
+(dolist (func '(find-function
+                consult-imenu consult-imenu-multi
+                consult-line consult-grep consult-git-grep consult-ripgrep
+                ;;consult-outline consult-eglot-symbols
+                ;;beginning-of-buffer end-of-buffer jump-to-register mark-whole-buffer
+                ;;beginend-prog-mode-goto-end beginend-prog-mode-goto-beginning
+                ;;mwim-beginning-of-code-or-line mwim-end-of-code-or-line
+                ;;next-buffer previous-buffer switch-to-buffer describe-function
+                ;;describe-variable find-file-at-point xref-find-definitions
+                ;;session-jump-to-last-change avy-goto-word-1 avy-goto-word-2
+                embark-act keyboard-escape-quit
+                embark-next-symbol embark-previous-symbol
+                citre-jump))
+  (advice-add func :before 'my--push-point-to-xref-marker-stack))
+
 (provide 'init-functions)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

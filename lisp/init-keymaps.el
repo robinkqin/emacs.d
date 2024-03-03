@@ -41,10 +41,19 @@
 ;;(global-set-key (kbd "M-\\") 'my/xref-find-references-at-point)
 ;;(global-set-key (kbd "M-s \\") 'my/xref-find-references-from-yank)
 
-(global-set-key (kbd "M-.") 'xref-find-definitions)
-(global-set-key (kbd "M-/") 'xref-find-references)
+(when (my/lsp-bridge-available-p)
+  (global-set-key (kbd "M-.") 'lsp-bridge-find-def)
+  (global-set-key (kbd "M-,") 'lsp-bridge-find-def-return)
+  (global-set-key (kbd "M-/") 'lsp-bridge-find-references)
+  (global-set-key (kbd "M-]") 'lsp-bridge-workspace-list-symbols))
 
-(when (and (package-installed-p 'citre) my/citre-enable)
+(when (my/eglot-available-p)
+  (global-set-key (kbd "M-.") 'xref-find-definitions)
+  (global-set-key (kbd "M-/") 'xref-find-references)
+  (global-set-key (kbd "M-]") 'consult-eglot-symbols))
+
+(when (and (package-installed-p 'citre)
+           (my/citre-available-p))
   (global-set-key (kbd "M-.") 'citre-jump+)
   (global-set-key (kbd "M-/") 'citre-jump-to-reference)
   (global-set-key (kbd "M-]") 'consult-citre)

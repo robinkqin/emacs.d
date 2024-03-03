@@ -6,7 +6,10 @@
 
 ;; compile_commands.json
 
-(add-to-list 'load-path "~/workbench/emacs/lsp-bridge/")
+(require 'init-yasnippet)
+(message "init yasnippet done")
+
+(add-to-list 'load-path my/lsp-bridge-path)
 (setq lsp-bridge-enable-debug t)
 (setq lsp-bridge-enable-log nil)
 (require 'lsp-bridge)
